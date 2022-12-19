@@ -72,7 +72,7 @@ public partial class @InputMaster : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""up"",
                     ""id"": ""08104a39-1aa3-4248-a56b-22551fd403ad"",
-                    ""path"": ""<Keyboard>/z"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard and mouse"",
@@ -116,7 +116,7 @@ public partial class @InputMaster : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""left"",
                     ""id"": ""9fa70483-4224-49e1-9e33-2caffa44857c"",
-                    ""path"": ""<Keyboard>/q"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard and mouse"",
