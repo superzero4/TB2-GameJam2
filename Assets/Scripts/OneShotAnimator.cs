@@ -13,7 +13,7 @@ public class OneShotAnimator : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(1f);
-            GetComponent<AnimatorOverrideSelector>().PickAnimator(Random.Range(0, 4));
+            GetComponent<AnimatorFacade>().PickAnimator(Random.Range(0, 4));
         }
 
     }
