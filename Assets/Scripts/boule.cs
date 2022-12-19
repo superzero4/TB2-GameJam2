@@ -8,12 +8,12 @@ public class boule : MonoBehaviour
 
     private Vector3 newPos;
 
+    [SerializeField]
     private float shootSpeed;
 
     void Start()
     {
         newPos = transform.position;
-        shootSpeed = 5f;
     }
 
     void Update()

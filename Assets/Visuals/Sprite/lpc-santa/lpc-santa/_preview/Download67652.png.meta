@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 50
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -3918,8 +3918,8 @@ TextureImporter:
       Download67652_74: 247759955
       Download67652_21: -343044116
       Download67652_54: 2029273899
-      Download67652_98: -1526245591
       Download67652_138: -983256321
+      Download67652_98: -1526245591
       Download67652_99: 1178910269
       Download67652_49: 1750259268
       Download67652_93: 115545864
@@ -3989,8 +3989,8 @@ TextureImporter:
       Download67652_154: 1946271711
       Download67652_164: 1299998292
       Download67652_27: -609187768
-      Download67652_118: 1464959645
       Download67652_100: 314570022
+      Download67652_118: 1464959645
       Download67652_172: 794041459
       Download67652_43: -997126249
       Download67652_13: 1113425051
@@ -4000,8 +4000,8 @@ TextureImporter:
       Download67652_129: 130989957
       Download67652_103: 1354368042
       Download67652_106: 1960217028
-      Download67652_79: 1897395378
       Download67652_177: 1442882665
+      Download67652_79: 1897395378
       Download67652_47: -2082587854
       Download67652_58: 602716562
       Download67652_66: -1993690764

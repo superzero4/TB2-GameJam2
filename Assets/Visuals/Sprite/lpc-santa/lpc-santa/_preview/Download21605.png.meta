@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 50
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -3996,8 +3996,8 @@ TextureImporter:
       Download21605_28: -1297453700
       Download21605_133: -1760899535
       Download21605_91: 1707219268
-      Download21605_112: 615198536
       Download21605_153: -1128110600
+      Download21605_112: 615198536
       Download21605_163: -1422484289
       Download21605_11: -1390415509
       Download21605_72: 2146724625
@@ -4011,9 +4011,9 @@ TextureImporter:
       Download21605_131: -1728765405
       Download21605_140: 2029303485
       Download21605_14: 1681742649
-      Download21605_88: 1580464278
       Download21605_101: 41633932
       Download21605_150: 1111010085
+      Download21605_88: 1580464278
       Download21605_169: 761297376
       Download21605_51: -1435121282
       Download21605_134: 1275368107
