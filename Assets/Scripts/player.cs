@@ -8,6 +8,10 @@ public class player : MonoBehaviour
     private Vector3 mousePosition;
     private Vector3 aimDirection;
     private Vector3 newPos;
+
+    private new Camera camera;
+
+    //In Radian
     public float angle;
 
     [SerializeField]
@@ -19,6 +23,8 @@ public class player : MonoBehaviour
     {
         newPos = transform.position;
 
+        camera = Camera.main;
+
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
             Shoot();
@@ -29,7 +35,7 @@ public class player : MonoBehaviour
 
     public void Update()
     {
-        mousePosition = Input.mousePosition;
+        mousePosition = GetMousePosition();
         aimDirection = (mousePosition - transform.position).normalized;
 
 
@@ -39,8 +45,8 @@ public class player : MonoBehaviour
 
         transform.position = newPos;
 
-        angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-        transform.eulerAngles = new Vector3(0, 0, angle);
+        angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
+        transform.eulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg);
     }
     public void Shoot()
     {
@@ -53,4 +59,15 @@ public class player : MonoBehaviour
         newBoul.transform.position = newBoulpos;
     }
 
+    public Vector3 GetMousePosition()
+    {
+        if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
+        {
+            return hitInfo.point;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+    }
 }

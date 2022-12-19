@@ -16,7 +16,6 @@ public class boule : MonoBehaviour
         shootSpeed = 5f;
     }
 
-    // Update is called once per frame
     void Update()
     {
         newPos.x += shootSpeed * Time.deltaTime * Mathf.Cos(angle);
