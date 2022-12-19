@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1769185724038163823}
   - component: {fileID: -6135088265534378933}
   m_Layer: 0
-  m_Name: perso
+  m_Name: player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -111,4 +111,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controls: {fileID: -944628639613478452, guid: e606e6100d154944abd230d6f5b6dcd7, type: 3}
+  angle: 0
+  boule: {fileID: 452928858638900783, guid: 1e4fa98ebd08f1147bad1ac393d9827d, type: 3}
   speed: 10

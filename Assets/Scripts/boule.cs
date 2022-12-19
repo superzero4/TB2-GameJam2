@@ -4,23 +4,24 @@ using UnityEngine;
 
 public class boule : MonoBehaviour
 {
-    public Vector3 mousePosition { get; private set; }
+    public float angle;
 
     private Vector3 newPos;
 
-    private float angle;
+    private float shootSpeed;
 
     void Start()
     {
-        mousePosition = Input.mousePosition;
         newPos = transform.position;
-
-
+        shootSpeed = 5f;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        newPos.x += shootSpeed * Time.deltaTime * Mathf.Cos(angle);
+        newPos.y += shootSpeed * Time.deltaTime * Mathf.Sin(angle);
+
+        transform.position = newPos;
     }
 }
