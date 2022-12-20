@@ -6,23 +6,28 @@ using UnityEngine;
 public class Boule : MonoBehaviour
 {
     public float angle;
-
-    private Vector3 newPos;
-
+    [SerializeField]
     private float shootSpeed;
+    [SerializeField]
+    private Rigidbody2D _rb;
+    public player launcher;
 
     void Start()
     {
-        newPos = transform.position;
-        shootSpeed = 5f;
+        
+        //Position d�part
+        Vector2 newPos = new Vector2(launcher._rb.position.x + 0.6f * launcher._cc.size.x * Mathf.Cos(angle), launcher._rb.position.y + 0.6f * launcher._cc.size.y * Mathf.Sin(angle));
+        _rb.MovePosition(newPos);
+        
+        //Shoot
+        Vector2 force = new Vector2(shootSpeed * Mathf.Cos(angle), shootSpeed * Mathf.Sin(angle));
+        _rb.AddForce(force , ForceMode2D.Impulse);
+        Debug.Log(force);
     }
 
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        newPos.x += shootSpeed * Time.deltaTime * Mathf.Cos(angle);
-        newPos.y += shootSpeed * Time.deltaTime * Mathf.Sin(angle);
-
-        transform.position = newPos;
+        Destroy(gameObject);
     }
 
 	void OnCollisionEnter2D(Collision2D col)
