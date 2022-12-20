@@ -8,8 +8,11 @@ using UnityEngine.UI;
 
 public class player : MonoBehaviour
 {
+    //Body
     public Rigidbody2D _rb;
     public CapsuleCollider2D _cc;
+    [SerializeField]
+    private SpriteRenderer _sr;
 
     //Move
     public InputActionAsset controls;
@@ -33,6 +36,14 @@ public class player : MonoBehaviour
 
     //Animation
     public AnimatorFacade animator;
+    [SerializeField]
+    private float TimerClignoteMax;
+    private float TimerClignote;
+    private bool playerColor;
+    public bool Collide;
+    [SerializeField]
+    private float TimerCollisionMax;
+    private float TimerCollision;
 
     public bool canMove;
 
@@ -72,6 +83,13 @@ public class player : MonoBehaviour
         canShoot = false;
         reload = false;
         timerReload = timerReloadMax;
+
+        //Animation
+        TimerClignote = TimerClignoteMax;
+        playerColor = false;
+        Collide = false;
+
+        TimerCollision = TimerCollisionMax;
     }
 
 	void OnEnable()
@@ -121,6 +139,35 @@ public class player : MonoBehaviour
                 }
             }
         }
+
+        //Clignote en rouge
+        if (Collide)
+        {
+            TimerCollision -= Time.deltaTime;
+            TimerClignote -= Time.deltaTime;
+            if (TimerClignote <= 0)
+            {
+                playerColor = !playerColor;
+                TimerClignote = TimerClignoteMax;
+            }
+            if (!playerColor)
+            {
+                _sr.material.color = Color.red;
+            }
+            if (playerColor)
+            {
+                _sr.material.color = Color.white;
+            }
+
+            //Periode d'invincibilité apèrs une collision
+            if (TimerCollision <= 0)
+            {
+                TimerCollision = TimerCollisionMax;
+                _sr.material.color = Color.white;
+                TimerClignote = TimerClignoteMax;
+                Collide = false;
+            }
+        }  
     }
 
     public void FixedUpdate()
@@ -175,13 +222,17 @@ public class player : MonoBehaviour
             animator.Kill();
             Destroy(gameObject , 1);
         }
+        if(Health > 0 && Collide == false)
+        {
+            Collide = true;
+        }
     }
 
 	[ContextMenu("TakeDamage")]
 	public void TakeDamage()
 	{
-		Health--;
-		HitTaken?.Invoke();
+        Health--;
+        HitTaken?.Invoke();
 	}
 
 	[ContextMenu("InflictDamage")]

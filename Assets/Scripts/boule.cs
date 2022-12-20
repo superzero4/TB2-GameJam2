@@ -37,8 +37,11 @@ public class boule : MonoBehaviour
             {
                 return;
             }
-            player.TakeDamage();
-            launcher.InflictDamage();
+            if(player.Collide == false)
+            {
+                player.TakeDamage();
+                launcher.InflictDamage();
+            }  
         }
 
         //Particles
