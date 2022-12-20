@@ -130,6 +130,7 @@ public class player : MonoBehaviour
             }
             if (reload && canReload)
             {
+                animator.ReloadAnimation(1 - (timerReload / timerReloadMax));
                 timerReload -= Time.deltaTime;
                 if(timerReload <= 0)
                 {   
