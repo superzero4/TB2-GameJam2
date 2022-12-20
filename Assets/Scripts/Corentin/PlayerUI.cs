@@ -1,53 +1,93 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
+	[SerializeField] player _player;
+	
 	[SerializeField] float _refillDuration;
 
+	[SerializeField] Image _crownImage;
 	[SerializeField] List<Image> _heartsImage;
 	[SerializeField] TextMeshProUGUI _scoreText;
 	[SerializeField] Image _snowballFillImage;
 
+	Stack<Image> _activeHearts;
+
+	void Awake()
+	{
+		_activeHearts = new Stack<Image>(_heartsImage);
+	}
+
 	void OnEnable()
 	{
-		// player.HitTaken += OnHitTaken;
-		// player.HitGiven += OnHitGiven;
-		// player.SnowballThrown += OnSnowballThrown;
-		// player.RefillSnowball += OnRefillSnowball;
+		_player.HitTaken += OnHitTaken;
+		_player.HitGiven += OnHitGiven;
+		_player.SnowballThrown += OnSnowballThrown;
+		_player.RefillSnowball += OnRefillSnowball;
+		
+		player.MaxKillCountChanged += OnMaxKillCountChanged;
+	}
+
+	void Start()
+	{
+		_crownImage.enabled = false;
 	}
 
 	void OnDisable()
 	{
-		// player.HitTaken -= OnHitTaken;
-		// player.HitGiven -= OnHitGiven;
-		// player.SnowballThrown -= OnSnowballThrown;
-		// player.RefillSnowball -= OnRefillSnowball;
+		_player.HitTaken -= OnHitTaken;
+		_player.HitGiven -= OnHitGiven;
+		_player.SnowballThrown -= OnSnowballThrown;
+		_player.RefillSnowball -= OnRefillSnowball;
+
+		player.MaxKillCountChanged -= OnMaxKillCountChanged;
 	}
 
-	public void OnHitTaken()
+	void OnHitTaken()
 	{
-		// _heartsImage[^player.Health].color = Color.gray;
+		if (_activeHearts.TryPop(out Image heart))
+			heart.color = Color.gray;
 	}
-	
-	public void OnHitGiven()
+
+	void OnHitGiven()
 	{
-		// _scoreText.text = $"{player.KillCount}";
+		if (player.Players.Max(player => player.KillCount) == _player.KillCount)
+			SetCrown();
+		
+		_scoreText.text = $"{_player.KillCount}";
 	}
-	
-	public void OnSnowballThrown()
+
+	void OnSnowballThrown()
 	{
 		_snowballFillImage.fillAmount = 0f;
 	}
 
-	public void OnRefillSnowball()
+	void OnRefillSnowball()
 	{
 		StartCoroutine(RefillSnowball());
 	}
-	
+
+	void OnMaxKillCountChanged()
+	{
+		UnsetCrown();
+	}
+
+	void SetCrown()
+	{
+		_crownImage.enabled = true;
+	}
+
+	void UnsetCrown()
+	{
+		_crownImage.enabled = false;
+	}
+
 	IEnumerator RefillSnowball()
 	{
 		float timer = 0;
@@ -60,5 +100,7 @@ public class PlayerUI : MonoBehaviour
 			
 			yield return null;
 		}
+
+		_snowballFillImage.fillAmount = 1f;
 	}
 }
