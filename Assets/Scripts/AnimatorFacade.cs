@@ -20,7 +20,7 @@ public class AnimatorFacade : MonoBehaviour
     }
     public void Kill()
     {
-        _animator.SetTrigger(Shoot);
+        _animator.SetTrigger(Death);
     }
     public void ShootToward(float x,float y)
     {
