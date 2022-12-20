@@ -81,47 +81,62 @@ public class player : NetworkBehaviour
         Health = 3;
 	}
 
+    private void Update()
+    {
+        if (!IsOwner)
+           return;
+
+        // Todo : replace by a functional input system
+        var moveDir = new Vector3(0, 0, 0);
+
+        if (Input.GetKey(KeyCode.Z)) moveDir.y += 1f;
+        if (Input.GetKey(KeyCode.S)) moveDir.y -= 1f;
+        if (Input.GetKey(KeyCode.Q)) moveDir.x -= 1f;
+        if (Input.GetKey(KeyCode.D)) moveDir.x += 1f;
+
+        transform.position += moveDir * 2 * Time.deltaTime;
+        
+        if (canMove)
+        {
+	        //Shoot
+	        mousePosition = GetMousePosition();
+
+	        //Move
+	        Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
+	        Debug.Log(inputVector);
+	        newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
+	        newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
+
+	        //Animation
+	        animator.SetOrientation(inputVector.x, inputVector.y);
+
+	        //Reload
+	        _slider.gameObject.SetActive(reload);
+	        if (reload)
+	        {
+		        timerReload -= Time.fixedDeltaTime;
+		        _slider.value = timerReloadMax - timerReload;
+		        if (timerReload <= 0)
+		        {
+			        canShoot = true;
+			        timerReload = timerReloadMax;
+			        reload = false;
+		        }
+	        }
+        }
+        
+        //Shoot
+        aimDirection = (mousePosition - _rb.position).normalized;
+        angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
+    }
+
     public void FixedUpdate()
     {
         if (!IsOwner)
             return;
-
-        if (canMove)
-        {
-            //Shoot
-            mousePosition = GetMousePosition();
-
-            //Move
-            Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
-            Debug.Log(inputVector);
-            newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
-            newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
-
-            //Animation
-            animator.SetOrientation(inputVector.x, inputVector.y);
-
-            //Reload
-            _slider.gameObject.SetActive(reload);
-            if (reload)
-            {
-                timerReload -= Time.fixedDeltaTime;
-                _slider.value = timerReloadMax - timerReload;
-                if (timerReload <= 0)
-                {
-                    canShoot = true;
-                    timerReload = timerReloadMax;
-                    reload = false;
-                }
-            }
-            
-        }
-
+        
         //Move
         _rb.MovePosition(_rb.position + newPos);
-
-        //Shoot
-        aimDirection = (mousePosition - _rb.position).normalized;
-        angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
 
 	[ContextMenu("Shoot")]

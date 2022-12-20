@@ -7,12 +7,13 @@ public class PlayerManager : NetworkBehaviour
 {
     [SerializeField] private GameObject _prefab;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        SpawnPlayer(NetworkManager.Singleton.LocalClientId);
+        SpawnPlayerServerRpc(NetworkManager.Singleton.LocalClientId);
     }
 
-    private void SpawnPlayer(ulong clientID)
+    [ServerRpc(RequireOwnership = false)]
+    private void SpawnPlayerServerRpc(ulong clientID)
     {
         var player = Instantiate(_prefab);
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
