@@ -27,10 +27,9 @@ public class player : MonoBehaviour
     //Reload
     private bool canShoot;
     private bool reload;
+    public bool canReload;
     public float timerReloadMax;
     private float timerReload;
-    [SerializeField]
-    private Slider _slider;
 
     //Animation
     public AnimatorFacade animator;
@@ -66,17 +65,13 @@ public class player : MonoBehaviour
             {
                 Reload();
             };
-            controls.Enable();
-
-            
+            controls.Enable();      
         }
 
         //Reload
         canShoot = true;
         reload = false;
         timerReload = timerReloadMax;
-        _slider.gameObject.SetActive(false);
-        _slider.maxValue = timerReloadMax;
     }
 
 	void OnEnable()
@@ -105,11 +100,19 @@ public class player : MonoBehaviour
             animator.SetOrientation(inputVector.x, inputVector.y);
 
             //Reload
-            _slider.gameObject.SetActive(reload);
-            if (reload)
+            if (inputVector != Vector2.zero)
+            {
+                canReload = false;
+                reload = false;
+                timerReload = timerReloadMax;
+            }
+            else
+            {
+                canReload = true;
+            }
+            if (reload && canReload)
             {
                 timerReload -= Time.deltaTime;
-                _slider.value = timerReloadMax - timerReload;
                 if(timerReload <= 0)
                 {   
                     canShoot = true;
