@@ -123,6 +123,7 @@ public class player : MonoBehaviour
                 canReload = false;
                 reload = false;
                 timerReload = timerReloadMax;
+                animator.ReloadAnimation(2f);
             }
             else
             {

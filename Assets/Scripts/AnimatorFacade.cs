@@ -46,25 +46,31 @@ public class AnimatorFacade : MonoBehaviour
     public void ReloadAnimation(float progress)
     {
         float value;
-        //We cycle beetwen frame 3 and 4 while progressing
-        Debug.Log("Progress ; " + progress);
-        if (progress > EaseInOut && progress < 1 - EaseInOut)
-        {
-            value = FirstFrameOfLoop + progress * 5 % 2;
-            Debug.Log("Middle : " + value);
-        }
+        if (progress >= 1f)
+            value = 2f;
         else
         {
-            if (progress > 1 - EaseInOut)
+
+            //We cycle beetwen frame 3 and 4 while progressing
+            //Debug.Log("Progress ; " + progress);
+            if (progress > EaseInOut && progress < 1 - EaseInOut)
             {
-                progress = 1 - progress;
+                value = FirstFrameOfLoop + progress * 5 % 2;
+                //Debug.Log("Middle : " + value);
             }
-            //We use the first 3 frames as first 3 and last 3
-            value = progress * (FirstFrameOfLoop / EaseInOut);
-            Debug.Log("Middle : " + value);
+            else
+            {
+                if (progress > 1 - EaseInOut)
+                {
+                    progress = 1 - progress;
+                }
+                //We use the first 3 frames as first 3 and last 3
+                value = progress * (FirstFrameOfLoop / EaseInOut);
+                Debug.Log("Middle : " + value);
+            }
+            value = (float)Mathf.FloorToInt(value) / lengthOfDeathClip.Value;
+            //Debug.Log("Final value , " + value);
         }
-        value = (float)Mathf.FloorToInt(value) / lengthOfDeathClip.Value;
-        Debug.Log("Final value ," + value);
         _animator.SetFloat(ReloadProgress, value);
     }
     public void PickAnimator(int index)
