@@ -11,8 +11,8 @@ public class AnimatorFacade : MonoBehaviour
     private const string Y = "YDir";
     private const string Death = "Death";
     private const string Shoot = "Shoot";
-    private const string XShoot = "Shoot";
-    private const string YShoot = "Shoot";
+    private const string XShoot = "XShoot";
+    private const string YShoot = "YShoot";
     public void SetOrientation(float x, float y,string xKey = X,string yKey=Y)
     {
         _animator.SetFloat(xKey, x);
