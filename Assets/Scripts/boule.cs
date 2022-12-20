@@ -13,6 +13,10 @@ public class boule : MonoBehaviour
     public player launcher;
     [SerializeField]
     private ParticleSystem _ps;
+    [SerializeField]
+    private Collider2D _collider;
+    [SerializeField]
+    private Renderer _renderer;
 
     void Start()
     {
@@ -43,8 +47,11 @@ public class boule : MonoBehaviour
         }
 
         //Particles
+        _ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         _ps.Play();
-
-        Destroy(gameObject);
+        _renderer.enabled = false;
+        _collider.enabled = false;
+        _rb.velocity = Vector2.zero;
+        Destroy(gameObject , 2);
     }
 }
