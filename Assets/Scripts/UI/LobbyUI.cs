@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ public class LobbyUI : NetworkBehaviour
     private LobbyPlayerCard[] lobbyPlayerCards;
 
     [SerializeField] private Button startGameButton;
+    [SerializeField] private TMP_InputField inputField;
 
     private NetworkList<LobbyPlayerState> lobbyPlayers;
 
@@ -35,6 +37,7 @@ public class LobbyUI : NetworkBehaviour
                 HandleClientConnected(client.ClientId);
             }
         }
+        inputField.text = PlayerPrefs.GetString("Code");
     }
 
     public override void OnDestroy()
