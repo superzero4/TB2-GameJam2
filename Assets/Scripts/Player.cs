@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class player : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public InputActionAsset controls;
 
@@ -19,6 +23,18 @@ public class player : MonoBehaviour
     [SerializeField]
     private float speed;
 
+	public int KillCount { get; set; }
+	public int Health { get; set; }
+
+	public Action HitTaken { get; set; } 
+	public Action HitGiven { get; set; } 
+	public Action RefillSnowball { get; set; } 
+	public Action SnowballThrown { get; set; }
+	
+	public static Action MaxKillCountChanged { get; set; }
+
+	public static List<Player> Players { get; } = new List<Player>();
+
     private void Awake()
     {
         newPos = transform.position;
@@ -33,7 +49,17 @@ public class player : MonoBehaviour
         controls.Enable();
     }
 
-    public void Update()
+	void OnEnable()
+	{
+		Players.Add(this);
+	}
+
+	void Start()
+	{
+		Health = 3;
+	}
+
+	public void Update()
     {
         mousePosition = GetMousePosition();
         aimDirection = (mousePosition - transform.position).normalized;
@@ -48,15 +74,23 @@ public class player : MonoBehaviour
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
         transform.eulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg);
     }
-    public void Shoot()
+
+	void OnDisable()
+	{
+		Players.Remove(this);
+	}
+
+	public void Shoot()
     {
         GameObject newBoul = Instantiate<GameObject>(boule);
-        newBoul.GetComponent<boule>().angle = angle;
+        newBoul.GetComponent<Boule>().angle = angle;
         Vector3 newBoulpos = Vector3.zero;
         newBoulpos.x = transform.position.x;
         newBoulpos.y = transform.position.y;
         newBoulpos.z = transform.position.z;
         newBoul.transform.position = newBoulpos;
+		
+		SnowballThrown?.Invoke();
     }
 
     public Vector3 GetMousePosition()
@@ -70,4 +104,22 @@ public class player : MonoBehaviour
             return Vector3.zero;
         }
     }
+
+	public void TakeDamage()
+	{
+		Health--;
+		HitTaken?.Invoke();
+	}
+
+	public void InflictDamage()
+	{
+		int maxKillCount = Players.Max(player => player.KillCount);
+		
+		KillCount++;
+		
+		if (KillCount > maxKillCount)
+			MaxKillCountChanged?.Invoke();
+		
+		HitGiven?.Invoke();
+	}
 }

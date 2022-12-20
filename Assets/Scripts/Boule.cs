@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class boule : MonoBehaviour
+public class Boule : MonoBehaviour
 {
     public float angle;
 
@@ -23,4 +24,13 @@ public class boule : MonoBehaviour
 
         transform.position = newPos;
     }
+
+	void OnCollisionEnter2D(Collision2D col)
+	{
+		if (col.collider.TryGetComponent(out Player player))
+		{
+			player.TakeDamage();
+			// launcher.InflictDamage();
+		}
+	}
 }
