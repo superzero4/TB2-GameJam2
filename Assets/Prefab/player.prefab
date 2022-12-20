@@ -54,7 +54,8 @@ MonoBehaviour:
   speed: 5
   angle: 0
   b: {fileID: -9169445946769733672, guid: 1e4fa98ebd08f1147bad1ac393d9827d, type: 3}
-  timerReloadMax: 2
+  canReload: 0
+  timerReloadMax: 1.5
   animator: {fileID: 2091875566589991457}
   canMove: 1
 --- !u!50 &5660017372100096618

@@ -50,13 +50,19 @@ public class SnowController : MonoBehaviour
     }
 
     void UpdateAll(){
+#pragma warning disable CS0618 // Le type ou le membre est obsolète
         snowEmission.rate = 110f * masterIntensity * snowIntensity;
+#pragma warning restore CS0618 // Le type ou le membre est obsolète
         snowShape.radius = 30f * Mathf.Clamp(windIntensity, 0.4f, 1f) * masterIntensity;
         snowForce.x = new ParticleSystem.MinMaxCurve(-9f * windIntensity, -3-14f * windIntensity);
+#pragma warning disable CS0618 // Le type ou le membre est obsolète
         windEmission.rate = 14f * masterIntensity * (windIntensity + fogIntensity);
+#pragma warning restore CS0618 // Le type ou le membre est obsolète
         windMain.startLifetime = 2f + 6f * (1f - windIntensity);
         windMain.startSpeed = new ParticleSystem.MinMaxCurve(15f * windIntensity, 20 * windIntensity);
+#pragma warning disable CS0618 // Le type ou le membre est obsolète
         fogEmission.rate = (fogIntensity + (snowIntensity + windIntensity)*0.5f) * masterIntensity;
+#pragma warning restore CS0618 // Le type ou le membre est obsolète
         snowMat.SetFloat("_SnowLevel", snowLevel);
     }
 

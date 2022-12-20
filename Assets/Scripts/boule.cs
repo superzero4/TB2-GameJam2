@@ -11,17 +11,22 @@ public class boule : MonoBehaviour
     [SerializeField]
     private Rigidbody2D _rb;
     public player launcher;
+    [SerializeField]
+    private ParticleSystem _ps;
 
     void Start()
     {
-        
-        //Position d�part
-        Vector2 newPos = new Vector2(launcher._rb.position.x + 0.6f * launcher._cc.size.x * Mathf.Cos(angle), launcher._rb.position.y + 0.6f * launcher._cc.size.y * Mathf.Sin(angle));
-        _rb.MovePosition(newPos);
-        
         //Shoot
         Vector2 force = new Vector2(shootSpeed * Mathf.Cos(angle), shootSpeed * Mathf.Sin(angle));
         _rb.AddForce(force , ForceMode2D.Impulse);
+
+        //Position d�part
+        Vector2 newPos = new Vector2(launcher._rb.position.x + 0.6f * launcher._cc.size.x * Mathf.Cos(angle), launcher._rb.position.y + 0.6f * launcher._cc.size.y * Mathf.Sin(angle));
+        _rb.MovePosition(newPos);
+        transform.right = -force;
+
+        //Particles
+        _ps.Play();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -35,6 +40,10 @@ public class boule : MonoBehaviour
             player.TakeDamage();
             launcher.InflictDamage();
         }
+
+        //Particles
+        _ps.Play();
+
         Destroy(gameObject);
     }
 }

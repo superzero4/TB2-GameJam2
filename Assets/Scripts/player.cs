@@ -69,7 +69,7 @@ public class player : MonoBehaviour
         }
 
         //Reload
-        canShoot = true;
+        canShoot = false;
         reload = false;
         timerReload = timerReloadMax;
     }
@@ -170,7 +170,11 @@ public class player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        animator.Kill();
+        if(Health == 0)
+        {
+            animator.Kill();
+            Destroy(gameObject , 1);
+        }
     }
 
 	[ContextMenu("TakeDamage")]
