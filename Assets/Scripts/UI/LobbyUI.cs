@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,12 +9,14 @@ public class LobbyUI : NetworkBehaviour
     private LobbyPlayerCard[] lobbyPlayerCards;
 
     [SerializeField] private Button startGameButton;
+    [SerializeField] private TMP_InputField inputField;
 
     private NetworkList<LobbyPlayerState> lobbyPlayers;
 
     private void Awake()
     {
         lobbyPlayers = new NetworkList<LobbyPlayerState>();
+        inputField.onSelect.AddListener(CopyToClipboard);
     }
 
     public override void OnNetworkSpawn()
@@ -35,6 +38,8 @@ public class LobbyUI : NetworkBehaviour
                 HandleClientConnected(client.ClientId);
             }
         }
+
+        inputField.text = PlayerPrefs.GetString("Code");
     }
 
     public override void OnDestroy()
@@ -161,5 +166,11 @@ public class LobbyUI : NetworkBehaviour
         {
             startGameButton.interactable = IsEveryoneReady();
         }
+    }
+
+    private static void CopyToClipboard(string str)
+    {
+        GUIUtility.systemCopyBuffer = str;
+        Debug.Log("Copy to clipboard : " + GUIUtility.systemCopyBuffer);
     }
 }
