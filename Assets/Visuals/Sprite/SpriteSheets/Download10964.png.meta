@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 0
@@ -3930,8 +3930,8 @@ TextureImporter:
       Download10964_161: -1970006858
       Download10964_36: 1311562335
       Download10964_17: 1581056123
-      Download10964_59: -1773056929
       Download10964_128: 1170303953
+      Download10964_59: -1773056929
       Download10964_58: -1821424072
       Download10964_71: 2116454572
       Download10964_42: -481006529

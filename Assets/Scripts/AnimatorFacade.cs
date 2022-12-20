@@ -11,18 +11,20 @@ public class AnimatorFacade : MonoBehaviour
     private const string Y = "YDir";
     private const string Death = "Death";
     private const string Shoot = "Shoot";
-    public void SetOrientation(float x, float y)
+    private const string XShoot = "Death";
+    private const string YShoot = "Shoot";
+    public void SetOrientation(float x, float y, string xKey = X, string yKey = Y)
     {
         _animator.SetFloat(X, x);
         _animator.SetFloat(Y, y);
     }
     public void Kill()
     {
-        _animator.SetTrigger(Shoot);
+        _animator.SetTrigger(Death);
     }
-    public void ShootToward(float x,float y)
+    public void ShootToward(float x, float y)
     {
-        SetOrientation(x, y);
+        SetOrientation(x, y, XShoot, YShoot);
         _animator.SetTrigger(Shoot);
     }
     public void PickAnimator(int index)
