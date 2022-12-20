@@ -3,50 +3,53 @@ using UnityEngine.InputSystem;
 
 public class player : MonoBehaviour
 {
+    //Move
     public InputActionAsset controls;
-
-    private Vector3 mousePosition;
-    private Vector3 aimDirection;
-    private Vector3 newPos;
-
-    private new Camera camera;
-
-    //In Radian
-    public float angle;
-
-    [SerializeField]
-    private GameObject boule;
     [SerializeField]
     private float speed;
+    private Vector3 newPos;
+
+    //Shoot
+    public float angle;
+    [SerializeField]
+    private GameObject boule;
+    private Vector3 aimDirection;
+    private Vector3 mousePosition;
+    private new Camera camera;
+
+    //Animation
+    public AnimatorFacade animator;
+
 
     private void Awake()
     {
+        //Move
         newPos = transform.position;
 
+        //Shoot
         camera = Camera.main;
-
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
             Shoot();
         };
-
         controls.Enable();
     }
 
     public void Update()
     {
+        //Shoot
         mousePosition = GetMousePosition();
         aimDirection = (mousePosition - transform.position).normalized;
+        angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
 
-
+        //Move
         Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
         newPos.x += inputVector.x * speed * Time.deltaTime;
         newPos.y += inputVector.y * speed * Time.deltaTime;
-
         transform.position = newPos;
 
-        angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
-        transform.eulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg);
+        //Animation
+        animator.SetOrientation(inputVector.x, inputVector.y);
     }
     public void Shoot()
     {
@@ -57,6 +60,7 @@ public class player : MonoBehaviour
         newBoulpos.y = transform.position.y;
         newBoulpos.z = transform.position.z;
         newBoul.transform.position = newBoulpos;
+        animator.ShootToward(GetMousePosition().x, GetMousePosition().y);
     }
 
     public Vector3 GetMousePosition()
