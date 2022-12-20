@@ -33,8 +33,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 3
-    m_ConditionEvent: Progress
+  - m_ConditionMode: 2
+    m_ConditionEvent: Reload
     m_EventTreshold: 0.999
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 0}
@@ -241,8 +241,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 3
-    m_ConditionEvent: Progress
+  - m_ConditionMode: 1
+    m_ConditionEvent: Reload
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 2951851396132694776}
@@ -457,7 +457,7 @@ AnimatorStateMachine:
   m_AnyStateTransitions:
   - {fileID: 5545901571989621}
   - {fileID: -8399603660872870963}
-  - {fileID: -624067248665481092}
+  - {fileID: -3206156278513076923}
   m_EntryTransitions: []
   m_StateMachineTransitions:
   - first: {fileID: 4956049255511832108}
@@ -567,8 +567,8 @@ AnimatorStateMachine:
     m_State: {fileID: -1915973746595222085}
     m_Position: {x: 300, y: 50, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: -6267503407870098729}
-    m_Position: {x: 300, y: -40, z: 0}
+    m_State: {fileID: 2951851396132694776}
+    m_Position: {x: 290, y: -20, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
