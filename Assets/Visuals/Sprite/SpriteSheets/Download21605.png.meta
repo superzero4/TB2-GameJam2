@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 0
@@ -3857,7 +3857,7 @@ TextureImporter:
       Download21605_168: -670710723
       Download21605_5: 317453137
       Download21605_32: -2020355693
-      Download21605_7: 929419423
+      Download21605_37: -1537133823
       Download21605_8: 205907216
       Download21605_110: -58808653
       Download21605_12: 864134290
@@ -3873,9 +3873,9 @@ TextureImporter:
       Download21605_78: 659431028
       Download21605_20: 1769975752
       Download21605_70: -1326041812
-      Download21605_55: 682307715
-      Download21605_114: -93712547
       Download21605_75: 185042313
+      Download21605_114: -93712547
+      Download21605_55: 682307715
       Download21605_107: -2095711618
       Download21605_23: 761673561
       Download21605_174: -992060784
@@ -4030,7 +4030,7 @@ TextureImporter:
       Download21605_166: 1434898794
       Download21605_94: 1841449076
       Download21605_9: 1696761232
-      Download21605_37: -1537133823
+      Download21605_7: 929419423
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -22,9 +22,9 @@ public class AnimatorFacade : MonoBehaviour
     {
         _animator.SetTrigger(Death);
     }
-    public void ShootToward(float x,float y)
+    public void ShootToward(float x, float y)
     {
-        SetOrientation(x, y,XShoot,YShoot);
+        SetOrientation(x, y, XShoot, YShoot);
         _animator.SetTrigger(Shoot);
     }
     public void PickAnimator(int index)
