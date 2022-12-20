@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class player : MonoBehaviour
 {
@@ -18,34 +19,79 @@ public class player : MonoBehaviour
     private Vector2 aimDirection;
     private Vector2 mousePosition;
     private new Camera camera;
+    //Reload
+    private bool canShoot;
+    private bool reload;
+    [SerializeField]
+    private float timerReloadMax;
+    private float timerReload;
+    [SerializeField]
+    private Slider _slider;
 
     //Animation
     public AnimatorFacade animator;
 
+    public bool canMove;
 
     private void Awake()
     {
-        //Shoot
-        camera = Camera.main;
-        controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
+        if (canMove)
         {
-            Shoot();
-        };
-        controls.Enable();
+            //Shoot
+            camera = Camera.main;
+            controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
+            {
+                if(canShoot == true)
+                {
+                    Shoot();
+                }     
+            };
+            controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
+            {
+                Reload();
+            };
+            controls.Enable();
+
+            
+        }
+
+        //Reload
+        canShoot = true;
+        reload = false;
+        timerReload = timerReloadMax;
+        _slider.gameObject.SetActive(false);
+        _slider.maxValue = timerReloadMax;
     }
 
     public void Update()
     {
-        //Shoot
-        mousePosition = GetMousePosition();
+        if (canMove)
+        {
+            //Shoot
+            mousePosition = GetMousePosition();
 
-        //Move
-        Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
-        newPos.x = inputVector.x * speed * Time.deltaTime;
-        newPos.y = inputVector.y * speed * Time.deltaTime;
+            //Move
+            Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
+            newPos.x = inputVector.x * speed * Time.deltaTime;
+            newPos.y = inputVector.y * speed * Time.deltaTime;
 
-        //Animation
-        animator.SetOrientation(inputVector.x, inputVector.y);
+            //Animation
+            animator.SetOrientation(inputVector.x, inputVector.y);
+
+            //Reload
+            _slider.gameObject.SetActive(reload);
+            if (reload)
+            {
+                timerReload -= Time.deltaTime;
+                _slider.value = timerReloadMax - timerReload;
+                if(timerReload <= 0)
+                {   
+                    canShoot = true;
+                    timerReload = timerReloadMax;
+                    reload = false;
+                }
+            }
+        }
     }
 
     public void FixedUpdate()
@@ -63,8 +109,13 @@ public class player : MonoBehaviour
         boule newBoul = Instantiate(b);
         newBoul.angle = angle;
         newBoul.launcher = this;
-       
+        canShoot = false;
         animator.ShootToward(GetMousePosition().x, GetMousePosition().y);
+    }
+
+    public void Reload()
+    {
+        reload = true;
     }
 
     public Vector2 GetMousePosition()
@@ -77,5 +128,10 @@ public class player : MonoBehaviour
         {
             return Vector2.zero;
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        animator.Kill();
     }
 }

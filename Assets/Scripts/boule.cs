@@ -19,7 +19,6 @@ public class boule : MonoBehaviour
         //Shoot
         Vector2 force = new Vector2(shootSpeed * Mathf.Cos(angle), shootSpeed * Mathf.Sin(angle));
         _rb.AddForce(force , ForceMode2D.Impulse);
-        Debug.Log(force);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

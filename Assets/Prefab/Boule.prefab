@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7821137091161343562}
   m_Layer: 7
   m_Name: Boule
-  m_TagString: Untagged
+  m_TagString: Boule
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
