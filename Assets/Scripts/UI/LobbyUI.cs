@@ -16,6 +16,7 @@ public class LobbyUI : NetworkBehaviour
     private void Awake()
     {
         lobbyPlayers = new NetworkList<LobbyPlayerState>();
+        inputField.onSelect.AddListener(CopyToClipboard);
     }
 
     public override void OnNetworkSpawn()
@@ -37,6 +38,7 @@ public class LobbyUI : NetworkBehaviour
                 HandleClientConnected(client.ClientId);
             }
         }
+
         inputField.text = PlayerPrefs.GetString("Code");
     }
 
@@ -164,5 +166,11 @@ public class LobbyUI : NetworkBehaviour
         {
             startGameButton.interactable = IsEveryoneReady();
         }
+    }
+
+    private static void CopyToClipboard(string str)
+    {
+        GUIUtility.systemCopyBuffer = str;
+        Debug.Log("Copy to clipboard : " + GUIUtility.systemCopyBuffer);
     }
 }
