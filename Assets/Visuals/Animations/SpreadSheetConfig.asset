@@ -23,20 +23,30 @@ MonoBehaviour:
     _loop: 1
     _autoFramerate: 0
     _frameRate: 10
-  - _name: WalkN
-    _length: 9
+  - _name: SkipWalk
+    _length: 1
     _loop: 1
     _autoFramerate: 1
+    _frameRate: 1
+  - _name: WalkN
+    _length: 8
+    _loop: 1
+    _autoFramerate: 0
     _frameRate: 9
   - _name: WalkW
     _length: 9
     _loop: 1
     _autoFramerate: 1
     _frameRate: 9
-  - _name: WalkS
-    _length: 9
+  - _name: Idle
+    _length: 1
     _loop: 1
     _autoFramerate: 1
+    _frameRate: 1
+  - _name: WalkS
+    _length: 8
+    _loop: 1
+    _autoFramerate: 0
     _frameRate: 9
   - _name: WalkE
     _length: 9

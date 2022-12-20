@@ -20,22 +20,20 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: -557522409, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
-    - time: 0.11111111
       value: {fileID: 1897395378, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
-    - time: 0.22222222
+    - time: 0.11111111
       value: {fileID: 1618173643, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
-    - time: 0.33333334
+    - time: 0.22222222
       value: {fileID: 396239994, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
-    - time: 0.44444445
+    - time: 0.33333334
       value: {fileID: 826470500, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
-    - time: 0.5555556
+    - time: 0.44444445
       value: {fileID: -1816756876, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
-    - time: 0.6666667
+    - time: 0.5555556
       value: {fileID: 1685355036, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
-    - time: 0.7777778
+    - time: 0.6666667
       value: {fileID: -1910327954, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
-    - time: 0.8888889
+    - time: 0.7777778
       value: {fileID: -376806608, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
     attribute: m_Sprite
     path: 
@@ -56,7 +54,6 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: -557522409, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
     - {fileID: 1897395378, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
     - {fileID: 1618173643, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
     - {fileID: 396239994, guid: 23e17bf752070d2469827addc7dbbaa4, type: 3}
