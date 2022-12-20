@@ -352,7 +352,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 0}
-  _refillDuration: 1.5
   _crownImage: {fileID: 1242817883222020982}
   _heartsImage:
   - {fileID: 9105514773580564932}

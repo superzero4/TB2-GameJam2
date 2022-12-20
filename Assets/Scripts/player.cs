@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class player : MonoBehaviour
+public class player : NetworkBehaviour
 {
     public Rigidbody2D _rb;
     public CapsuleCollider2D _cc;
@@ -14,7 +15,7 @@ public class player : MonoBehaviour
     //Move
     public InputActionAsset controls;
     [SerializeField]
-    private float speed;
+    private float speed = 2;
     private Vector2 newPos;
 
     //Shoot
@@ -35,7 +36,7 @@ public class player : MonoBehaviour
     //Animation
     public AnimatorFacade animator;
 
-    public bool canMove;
+    public bool canMove = true;
 
 	public int KillCount { get; set; }
 	public int Health { get; set; }
@@ -47,29 +48,21 @@ public class player : MonoBehaviour
 	
 	public static Action MaxKillCountChanged { get; set; }
 
-	public static List<player> Players { get; } = new List<player>();
-
     private void Awake()
     {
-        if (canMove)
-        {
-            //Shoot
-            camera = Camera.main;
-            controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
-            {
-                if(canShoot == true)
-                {
-                    Shoot();
-                }     
-            };
-            controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
-            {
-                Reload();
-            };
-            controls.Enable();
+        if (!IsOwner)
+            return;
 
-            
-        }
+        //Shoot
+        controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
+        {
+            Shoot();
+        };
+        controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
+        {
+            Reload();
+        };
+        controls.Enable();
 
         //Reload
         canShoot = true;
@@ -79,18 +72,20 @@ public class player : MonoBehaviour
         _slider.maxValue = timerReloadMax;
     }
 
-	void OnEnable()
+	void OnStartClient()
 	{
-		Players.Add(this);
+        if (!IsOwner)
+            return;
+
+        camera = Camera.main;
+        Health = 3;
 	}
 
-	void Start()
-	{
-		Health = 3;
-	}
-
-	public void Update()
+    public void FixedUpdate()
     {
+        if (!IsOwner)
+            return;
+
         if (canMove)
         {
             //Shoot
@@ -98,8 +93,9 @@ public class player : MonoBehaviour
 
             //Move
             Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
-            newPos.x = inputVector.x * speed * Time.deltaTime;
-            newPos.y = inputVector.y * speed * Time.deltaTime;
+            Debug.Log(inputVector);
+            newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
+            newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
 
             //Animation
             animator.SetOrientation(inputVector.x, inputVector.y);
@@ -108,20 +104,18 @@ public class player : MonoBehaviour
             _slider.gameObject.SetActive(reload);
             if (reload)
             {
-                timerReload -= Time.deltaTime;
+                timerReload -= Time.fixedDeltaTime;
                 _slider.value = timerReloadMax - timerReload;
-                if(timerReload <= 0)
-                {   
+                if (timerReload <= 0)
+                {
                     canShoot = true;
                     timerReload = timerReloadMax;
                     reload = false;
                 }
             }
+            
         }
-    }
 
-    public void FixedUpdate()
-    {
         //Move
         _rb.MovePosition(_rb.position + newPos);
 
@@ -130,14 +124,12 @@ public class player : MonoBehaviour
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
 
-	void OnDisable()
-	{
-		Players.Remove(this);
-	}
-
 	[ContextMenu("Shoot")]
 	public void Shoot()
     {
+        if (canShoot == false)
+            return;
+
         boule newBoul = Instantiate(b);
         newBoul.angle = angle;
         newBoul.launcher = this;
@@ -155,14 +147,13 @@ public class player : MonoBehaviour
 
     public Vector2 GetMousePosition()
     {
-        if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
-        {
-            return hitInfo.point;
-        }
-        else
-        {
+        if (camera == null)
             return Vector2.zero;
-        }
+
+        if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
+            return hitInfo.point;
+        else
+            return Vector2.zero;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -179,14 +170,13 @@ public class player : MonoBehaviour
 
 	[ContextMenu("InflictDamage")]
 	public void InflictDamage()
-	{
-		int maxKillCount = Players.Max(player => player.KillCount);
-		
-		KillCount++;
+	{		
+        //TODO use Network Manager
+		/*KillCount++;
 		
 		if (KillCount > maxKillCount)
 			MaxKillCountChanged?.Invoke();
 		
-		HitGiven?.Invoke();
+		HitGiven?.Invoke();*/
 	}
 }

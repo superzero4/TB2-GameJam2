@@ -10,6 +10,7 @@ public class LobbyUI : NetworkBehaviour
 
     [SerializeField] private Button startGameButton;
     [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private TextMeshProUGUI text;
 
     private NetworkList<LobbyPlayerState> lobbyPlayers;
 
@@ -40,6 +41,7 @@ public class LobbyUI : NetworkBehaviour
         }
 
         inputField.text = PlayerPrefs.GetString("Code");
+        text.text = NetworkManager.Singleton.LocalClientId.ToString();
     }
 
     public override void OnDestroy()

@@ -55,10 +55,11 @@ public class PlayerUI : MonoBehaviour
 
 	void OnHitGiven()
 	{
-		if (player.Players.Max(player => player.KillCount) == _player.KillCount)
+		//TODO use network manager
+		/*if (player.Players.Max(player => player.KillCount) == _player.KillCount)
 			SetCrown();
 		
-		_scoreText.text = $"{_player.KillCount}";
+		_scoreText.text = $"{_player.KillCount}";*/
 	}
 
 	void OnSnowballThrown()
