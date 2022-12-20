@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boule : MonoBehaviour
+public class boule : MonoBehaviour
 {
     public float angle;
     [SerializeField]
@@ -32,10 +32,10 @@ public class Boule : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D col)
 	{
-		if (col.collider.TryGetComponent(out Player player))
-		{
-			player.TakeDamage();
-			// launcher.InflictDamage();
-		}
+		if (!col.collider.TryGetComponent(out player player))
+			return;
+		
+		player.TakeDamage();
+		launcher.InflictDamage();
 	}
 }

@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class player : MonoBehaviour
 {
     public Rigidbody2D _rb;
     public CapsuleCollider2D _cc;
@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
 	
 	public static Action MaxKillCountChanged { get; set; }
 
-	public static List<Player> Players { get; } = new List<Player>();
+	public static List<player> Players { get; } = new List<player>();
 
     private void Awake()
     {
@@ -90,6 +90,7 @@ public class Player : MonoBehaviour
 		Players.Remove(this);
 	}
 
+	[ContextMenu("Shoot")]
 	public void Shoot()
     {
         boule newBoul = Instantiate(b);
@@ -113,12 +114,14 @@ public class Player : MonoBehaviour
         }
     }
 
+	[ContextMenu("TakeDamage")]
 	public void TakeDamage()
 	{
 		Health--;
 		HitTaken?.Invoke();
 	}
 
+	[ContextMenu("InflictDamage")]
 	public void InflictDamage()
 	{
 		int maxKillCount = Players.Max(player => player.KillCount);
@@ -129,5 +132,11 @@ public class Player : MonoBehaviour
 			MaxKillCountChanged?.Invoke();
 		
 		HitGiven?.Invoke();
+	}
+
+	[ContextMenu("RefillSnowball")]
+	public void ReefillSnowball()
+	{
+		RefillSnowball?.Invoke();
 	}
 }

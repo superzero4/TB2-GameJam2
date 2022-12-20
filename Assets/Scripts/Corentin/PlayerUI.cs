@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
-	[SerializeField] Player _player;
+	[SerializeField] player _player;
 	
 	[SerializeField] float _refillDuration;
 
@@ -17,6 +17,13 @@ public class PlayerUI : MonoBehaviour
 	[SerializeField] TextMeshProUGUI _scoreText;
 	[SerializeField] Image _snowballFillImage;
 
+	Stack<Image> _activeHearts;
+
+	void Awake()
+	{
+		_activeHearts = new Stack<Image>(_heartsImage);
+	}
+
 	void OnEnable()
 	{
 		_player.HitTaken += OnHitTaken;
@@ -24,7 +31,7 @@ public class PlayerUI : MonoBehaviour
 		_player.SnowballThrown += OnSnowballThrown;
 		_player.RefillSnowball += OnRefillSnowball;
 		
-		Player.MaxKillCountChanged += OnMaxKillCountChanged;
+		player.MaxKillCountChanged += OnMaxKillCountChanged;
 	}
 
 	void Start()
@@ -39,17 +46,18 @@ public class PlayerUI : MonoBehaviour
 		_player.SnowballThrown -= OnSnowballThrown;
 		_player.RefillSnowball -= OnRefillSnowball;
 
-		Player.MaxKillCountChanged -= OnMaxKillCountChanged;
+		player.MaxKillCountChanged -= OnMaxKillCountChanged;
 	}
 
 	void OnHitTaken()
 	{
-		_heartsImage[^_player.Health].color = Color.gray;
+		if (_activeHearts.TryPop(out Image heart))
+			heart.color = Color.gray;
 	}
 
 	void OnHitGiven()
 	{
-		if (Player.Players.Max(player => player.KillCount) == _player.KillCount)
+		if (player.Players.Max(player => player.KillCount) == _player.KillCount)
 			SetCrown();
 		
 		_scoreText.text = $"{_player.KillCount}";
@@ -92,5 +100,7 @@ public class PlayerUI : MonoBehaviour
 			
 			yield return null;
 		}
+
+		_snowballFillImage.fillAmount = 1f;
 	}
 }
