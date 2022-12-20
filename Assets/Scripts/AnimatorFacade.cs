@@ -14,7 +14,7 @@ public class AnimatorFacade : MonoBehaviour
     public void SetOrientation(float x, float y)
     {
         _animator.SetFloat(X, x);
-        _animator.SetFloat(Y, x);
+        _animator.SetFloat(Y, y);
     }
     public void Kill()
     {
