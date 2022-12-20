@@ -9,8 +9,6 @@ using UnityEngine.UI;
 public class PlayerUI : MonoBehaviour
 {
 	[SerializeField] player _player;
-	
-	[SerializeField] float _refillDuration;
 
 	[SerializeField] Image _crownImage;
 	[SerializeField] List<Image> _heartsImage;
@@ -92,9 +90,9 @@ public class PlayerUI : MonoBehaviour
 	{
 		float timer = 0;
 
-		while (timer <= _refillDuration)
+		while (timer <= _player.timerReloadMax)
 		{
-			_snowballFillImage.fillAmount = Mathf.Lerp(0f, 1f, timer / _refillDuration);
+			_snowballFillImage.fillAmount = Mathf.Lerp(0f, 1f, timer / _player.timerReloadMax);
 
 			timer += Time.deltaTime;
 			

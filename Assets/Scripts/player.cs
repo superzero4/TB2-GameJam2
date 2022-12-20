@@ -27,8 +27,7 @@ public class player : MonoBehaviour
     //Reload
     private bool canShoot;
     private bool reload;
-    [SerializeField]
-    private float timerReloadMax;
+    public float timerReloadMax;
     private float timerReload;
     [SerializeField]
     private Slider _slider;
@@ -129,7 +128,6 @@ public class player : MonoBehaviour
         //Shoot
         aimDirection = (mousePosition - _rb.position).normalized;
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
-        transform.eulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg);
     }
 
 	void OnDisable()
