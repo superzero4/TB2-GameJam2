@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 75
+  spritePixelsToUnits: 50
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -3853,7 +3853,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Download67448_67: 1396941438
+      Download67448_131: 2129976505
       Download67448_11: 46289348
       Download67448_63: -1814008302
       Download67448_176: -797233446
@@ -3956,12 +3956,12 @@ TextureImporter:
       Download67448_120: 2128891956
       Download67448_170: 965474410
       Download67448_26: -1970391350
-      Download67448_172: 1378869
+      Download67448_194: -389894171
       Download67448_0: 669731632
       Download67448_57: -1271526615
       Download67448_117: -616652943
       Download67448_31: 71250436
-      Download67448_194: -389894171
+      Download67448_172: 1378869
       Download67448_162: -324822395
       Download67448_163: 2008896082
       Download67448_79: 1852202887
@@ -4047,7 +4047,7 @@ TextureImporter:
       Download67448_113: -1041858676
       Download67448_181: -1692835270
       Download67448_125: 1555996907
-      Download67448_131: 2129976505
+      Download67448_67: 1396941438
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
