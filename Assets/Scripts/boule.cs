@@ -21,8 +21,6 @@ public class boule : MonoBehaviour
         _rb.AddForce(force , ForceMode2D.Impulse);
 
         //Position d�part
-        Vector2 newPos = new Vector2(launcher._rb.position.x + 0.6f * launcher._cc.size.x * Mathf.Cos(angle), launcher._rb.position.y + 0.6f * launcher._cc.size.y * Mathf.Sin(angle));
-        _rb.MovePosition(newPos);
         transform.right = -force;
 
         //Particles

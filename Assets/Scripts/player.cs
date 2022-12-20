@@ -188,7 +188,8 @@ public class player : MonoBehaviour
 	[ContextMenu("Shoot")]
 	public void Shoot()
     {
-        boule newBoul = Instantiate(b);
+        Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
+        boule newBoul = Instantiate(b , newBoulePos , Quaternion.identity);
         newBoul.angle = angle;
         newBoul.launcher = this;
         canShoot = false;
