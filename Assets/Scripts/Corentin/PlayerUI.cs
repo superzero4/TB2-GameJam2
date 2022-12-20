@@ -90,7 +90,7 @@ public class PlayerUI : MonoBehaviour
 	{
 		float timer = 0;
 
-		while (timer <= _player.timerReloadMax)
+		while (timer <= _player.timerReloadMax && _player.canReload == true)
 		{
 			_snowballFillImage.fillAmount = Mathf.Lerp(0f, 1f, timer / _player.timerReloadMax);
 
@@ -98,7 +98,10 @@ public class PlayerUI : MonoBehaviour
 			
 			yield return null;
 		}
+		if(_player.canReload == false)
+        {
+			_snowballFillImage.fillAmount = 0f;
+        }
 
-		_snowballFillImage.fillAmount = 1f;
 	}
 }

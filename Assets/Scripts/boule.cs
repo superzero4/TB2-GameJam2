@@ -26,10 +26,15 @@ public class boule : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {    
+        if (collision.TryGetComponent(out player player))
+        {
+            if(player == launcher)
+            {
+                return;
+            }
+            player.TakeDamage();
+            launcher.InflictDamage();
+        }
         Destroy(gameObject);
-        if (!collision.TryGetComponent(out player player))
-        return;
-        player.TakeDamage();
-        launcher.InflictDamage();
     }
 }
