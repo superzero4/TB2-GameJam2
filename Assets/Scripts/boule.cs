@@ -44,7 +44,6 @@ public class boule : MonoBehaviour
 
         //Particles
         _ps.Play();
-
         Destroy(gameObject);
     }
 }

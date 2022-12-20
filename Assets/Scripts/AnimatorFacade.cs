@@ -16,6 +16,7 @@ public class AnimatorFacade : MonoBehaviour
     private const string XShoot = "XShoot";
     private const string YShoot = "YShoot";
     private const string ReloadProgress = "Progress";
+    private const string ReloadBool = "Reload";
     private const float FirstFrameOfLoop = 2f;
     private float EaseInOut = .2f;
 
@@ -39,38 +40,46 @@ public class AnimatorFacade : MonoBehaviour
         SetOrientation(x, y, XShoot, YShoot);
         _animator.SetTrigger(Shoot);
     }
+    public void ReloadAnimation(bool value = false)
+    {
+        _animator.SetBool(ReloadBool, value);
+    }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="progress">Send >=1 to stop animation</param>
     public void ReloadAnimation(float progress)
     {
+        ReloadAnimation(true);
         float value;
-        if (progress >= 1f)
-            value = 2f;
+        //We cycle beetwen frame 3 and 4 while progressing
+        //Debug.Log("Progress ; " + progress);
+        if (progress > EaseInOut && progress < 1 - EaseInOut)
+        {
+            value = FirstFrameOfLoop + progress * 5 % 2;
+            //Debug.Log("Middle : " + value);
+        }
+
+
+        //We cycle beetwen frame 3 and 4 while progressing
+        //Debug.Log("Progress ; " + progress);
+        if (progress > EaseInOut && progress < 1 - EaseInOut)
+        {
+            value = FirstFrameOfLoop + progress * 5 % 2;
+            //Debug.Log("Middle : " + value);
+        }
         else
         {
-
-            //We cycle beetwen frame 3 and 4 while progressing
-            //Debug.Log("Progress ; " + progress);
-            if (progress > EaseInOut && progress < 1 - EaseInOut)
+            if (progress > 1 - EaseInOut)
             {
-                value = FirstFrameOfLoop + progress * 5 % 2;
-                //Debug.Log("Middle : " + value);
+                progress = 1 - progress;
             }
-            else
-            {
-                if (progress > 1 - EaseInOut)
-                {
-                    progress = 1 - progress;
-                }
-                //We use the first 3 frames as first 3 and last 3
-                value = progress * (FirstFrameOfLoop / EaseInOut);
-                Debug.Log("Middle : " + value);
-            }
-            value = (float)Mathf.FloorToInt(value) / lengthOfDeathClip.Value;
-            //Debug.Log("Final value , " + value);
+            //We use the first 3 frames as first 3 and last 3
+            value = progress * (FirstFrameOfLoop / EaseInOut);
+            Debug.Log("Middle : " + value);
         }
+        value = (float)Mathf.FloorToInt(value) / lengthOfDeathClip.Value;
+        //Debug.Log("Final value , " + value);
         _animator.SetFloat(ReloadProgress, value);
     }
     public void PickAnimator(int index)
