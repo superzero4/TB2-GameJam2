@@ -50,6 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rb: {fileID: 5660017372100096618}
   _cc: {fileID: 9199119696720592951}
+  _sr: {fileID: 8083409471878552502}
   controls: {fileID: -944628639613478452, guid: e606e6100d154944abd230d6f5b6dcd7, type: 3}
   speed: 5
   angle: 0
@@ -57,6 +58,9 @@ MonoBehaviour:
   canReload: 0
   timerReloadMax: 1.5
   animator: {fileID: 2091875566589991457}
+  TimerClignoteMax: 0.5
+  Collide: 0
+  TimerCollisionMax: 3
   canMove: 1
 --- !u!50 &5660017372100096618
 Rigidbody2D:
@@ -170,6 +174,11 @@ MonoBehaviour:
 --- !u!4 &8083409471878552501 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6098547037242079842, guid: b38f2c67e9e268d4ca28c00d46358b92, type: 3}
+  m_PrefabInstance: {fileID: 2633601027186254295}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &8083409471878552502 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6098547037242079841, guid: b38f2c67e9e268d4ca28c00d46358b92, type: 3}
   m_PrefabInstance: {fileID: 2633601027186254295}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3552765220945386886
