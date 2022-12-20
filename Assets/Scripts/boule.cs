@@ -23,6 +23,12 @@ public class boule : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Destroy(gameObject);
+        
+        if(collision != launcher._cc)
+        {
+            Destroy(gameObject);
+        }
     }
+
+
 }

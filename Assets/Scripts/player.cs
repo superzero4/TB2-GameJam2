@@ -6,6 +6,7 @@ public class player : MonoBehaviour
 {
     public Rigidbody2D _rb;
     public CapsuleCollider2D _cc;
+
     //Move
     public InputActionAsset controls;
     [SerializeField]
