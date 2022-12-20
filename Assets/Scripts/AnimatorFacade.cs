@@ -8,7 +8,7 @@ public class AnimatorFacade : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private RuntimeAnimatorController[] _controllers;
     [SerializeField] private AnimationCurve _frameOnProgress;
-    float lengthOfDeathClip;
+    float? lengthOfDeathClip;
     private const string X = "XDir";
     private const string Y = "YDir";
     private const string Death = "Death";
@@ -16,11 +16,13 @@ public class AnimatorFacade : MonoBehaviour
     private const string XShoot = "XShoot";
     private const string YShoot = "YShoot";
     private const string ReloadProgress = "Progress";
-    private float V = .2f;
+    private const float FirstFrameOfLoop = 2f;
+    private float EaseInOut = .2f;
 
     private void Start()
     {
-        lengthOfDeathClip = _animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
+
+        lengthOfDeathClip = 5;// ??= _animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
     }
     public void SetOrientation(float x, float y, string xKey = X, string yKey = Y)
 
@@ -43,19 +45,26 @@ public class AnimatorFacade : MonoBehaviour
     /// <param name="progress">Send >=1 to stop animation</param>
     public void ReloadAnimation(float progress)
     {
-        float value = _frameOnProgress.Evaluate(progress) / lengthOfDeathClip;
+        float value;
         //We cycle beetwen frame 3 and 4 while progressing
-        if (progress > V && progress < 1 - V)
-            value = 3 + progress * 10 % 2;
+        Debug.Log("Progress ; " + progress);
+        if (progress > EaseInOut && progress < 1 - EaseInOut)
+        {
+            value = FirstFrameOfLoop + progress * 5 % 2;
+            Debug.Log("Middle : " + value);
+        }
         else
         {
-            if (progress > 1 - V)
+            if (progress > 1 - EaseInOut)
             {
-                progress = 1 - V;
+                progress = 1 - progress;
             }
-            //We use the first 2 frames as first 2 and last 2
-            value = progress * (1 / V) * 2;
+            //We use the first 3 frames as first 3 and last 3
+            value = progress * (FirstFrameOfLoop / EaseInOut);
+            Debug.Log("Middle : " + value);
         }
+        value = (float)Mathf.FloorToInt(value) / lengthOfDeathClip.Value;
+        Debug.Log("Final value ," + value);
         _animator.SetFloat(ReloadProgress, value);
     }
     public void PickAnimator(int index)
