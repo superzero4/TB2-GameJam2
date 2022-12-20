@@ -1,26 +1,15 @@
-using TMPro;
-using Unity.Netcode.Transports.UTP;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
-using Unity.Services.Relay.Models;
 using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 
-public class MainMenuUI : MonoBehaviour
+public class TestRelay : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private TMP_InputField displayNameInputField;
-    [SerializeField] private TMP_InputField displayCodeInputField;
-
-    private void Start()
-    {
-        PlayerPrefs.GetString("PlayerName");
-        StartRelay();
-    }
-
-    private async void StartRelay()
+    private async void Start()
     {
         await UnityServices.InitializeAsync();
 
@@ -29,24 +18,7 @@ public class MainMenuUI : MonoBehaviour
             Debug.Log("Signed in " + AuthenticationService.Instance.PlayerId);
         };
 
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
-    }
-
-    public void OnHostClicked()
-    {
-        PlayerPrefs.SetString("PlayerName", displayNameInputField.text);
-
-        CreateRelay();
-    }
-
-    public void OnClientClicked()
-    {
-        PlayerPrefs.SetString("PlayerName", displayNameInputField.text);
-
-        if (displayCodeInputField.text == null)
-            return;
-
-        JoinRelay(displayCodeInputField.text);
+        await AuthenticationService.Instance.SignInAnonymouslyAsync(); 
     }
 
     private async void CreateRelay()
@@ -57,12 +29,11 @@ public class MainMenuUI : MonoBehaviour
 
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             Debug.Log(joinCode);
-            PlayerPrefs.SetString("Code", joinCode);
 
             RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            GameNetPortal.Instance.StartHost();
+            NetworkManager.Singleton.StartHost();
         }
         catch (RelayServiceException e)
         {
@@ -74,8 +45,6 @@ public class MainMenuUI : MonoBehaviour
     {
         try
         {
-            PlayerPrefs.SetString("Code", joinCode);
-
             Debug.Log("Try to join relay with code " + joinCode);
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
@@ -83,7 +52,7 @@ public class MainMenuUI : MonoBehaviour
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            ClientGameNetPortal.Instance.StartClient();
+            NetworkManager.Singleton.StartClient();
         }
         catch (RelayServiceException e)
         {
