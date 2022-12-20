@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -34,6 +38,18 @@ public class player : MonoBehaviour
 
     public bool canMove;
 
+	public int KillCount { get; set; }
+	public int Health { get; set; }
+
+	public Action HitTaken { get; set; } 
+	public Action HitGiven { get; set; } 
+	public Action RefillSnowball { get; set; } 
+	public Action SnowballThrown { get; set; }
+	
+	public static Action MaxKillCountChanged { get; set; }
+
+	public static List<player> Players { get; } = new List<player>();
+
     private void Awake()
     {
         if (canMove)
@@ -64,7 +80,17 @@ public class player : MonoBehaviour
         _slider.maxValue = timerReloadMax;
     }
 
-    public void Update()
+	void OnEnable()
+	{
+		Players.Add(this);
+	}
+
+	void Start()
+	{
+		Health = 3;
+	}
+
+	public void Update()
     {
         if (canMove)
         {
@@ -103,19 +129,29 @@ public class player : MonoBehaviour
         //Shoot
         aimDirection = (mousePosition - _rb.position).normalized;
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
+        transform.eulerAngles = new Vector3(0, 0, angle * Mathf.Rad2Deg);
     }
 
-    public void Shoot()
+	void OnDisable()
+	{
+		Players.Remove(this);
+	}
+
+	[ContextMenu("Shoot")]
+	public void Shoot()
     {
         boule newBoul = Instantiate(b);
         newBoul.angle = angle;
         newBoul.launcher = this;
         canShoot = false;
         animator.ShootToward(GetMousePosition().x, GetMousePosition().y);
+    
+		SnowballThrown?.Invoke();
     }
 
     public void Reload()
     {
+        RefillSnowball?.Invoke();
         reload = true;
     }
 
@@ -135,4 +171,24 @@ public class player : MonoBehaviour
     {
         animator.Kill();
     }
+
+	[ContextMenu("TakeDamage")]
+	public void TakeDamage()
+	{
+		Health--;
+		HitTaken?.Invoke();
+	}
+
+	[ContextMenu("InflictDamage")]
+	public void InflictDamage()
+	{
+		int maxKillCount = Players.Max(player => player.KillCount);
+		
+		KillCount++;
+		
+		if (KillCount > maxKillCount)
+			MaxKillCountChanged?.Invoke();
+		
+		HitGiven?.Invoke();
+	}
 }

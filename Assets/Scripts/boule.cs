@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class boule : MonoBehaviour
@@ -12,7 +15,7 @@ public class boule : MonoBehaviour
     void Start()
     {
         
-        //Position départ
+        //Position dï¿½part
         Vector2 newPos = new Vector2(launcher._rb.position.x + 0.6f * launcher._cc.size.x * Mathf.Cos(angle), launcher._rb.position.y + 0.6f * launcher._cc.size.y * Mathf.Sin(angle));
         _rb.MovePosition(newPos);
         
@@ -22,13 +25,11 @@ public class boule : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
-    {
-        
-        if(collision != launcher._cc)
-        {
-            Destroy(gameObject);
-        }
+    {    
+        Destroy(gameObject);
+        if (!collision.TryGetComponent(out player player))
+        return;
+        player.TakeDamage();
+        launcher.InflictDamage();
     }
-
-
 }
