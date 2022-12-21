@@ -57,8 +57,6 @@ public class player : NetworkBehaviour
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }
-	
-	public static Action MaxKillCountChanged { get; set; }
 
     public override void OnNetworkSpawn()
     {
