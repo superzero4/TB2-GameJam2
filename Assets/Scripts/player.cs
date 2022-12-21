@@ -58,9 +58,6 @@ public class player : NetworkBehaviour
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }
 	public Action<player> Died { get; set; }
-	
-	public static Action MaxKillCountChanged { get; set; }
-
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)

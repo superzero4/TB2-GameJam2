@@ -1,15 +1,19 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerManager : NetworkBehaviour
 {
-    [SerializeField] private GameObject prefab;
-	[SerializeField] private List<Transform> _spawnPoints;
-	
+    [SerializeField] private player prefab;
+	[SerializeField] private List<Transform> _spawnPoints;	
 	private List<player> _players = new List<player>();
 
+    private List<player> _players = new List<player>();
+
     private AudioManager audioManager;
+
+    public player TopPlayer => _players.Aggregate((p1, p2) => p1.KillCount > p2.KillCount ? p1 : p2);
 
     public override void OnNetworkSpawn()
     {
@@ -23,14 +27,11 @@ public class PlayerManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SpawnPlayerServerRpc(ulong clientID)
     {
-        var playerGO = Instantiate(prefab, _spawnPoints[_players.Count].position, Quaternion.identity);
-		player player = playerGO.GetComponent<player>();
-        
+        var player = Instantiate(prefab, _spawnPoints[_players.Count].position, Quaternion.identity);
 		_players.Add(player);
-
-        playerGO.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
-        
+        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);     
 		player.Died += OnPlayerDied;
+        player.HitGiven += OnHitGiven;
     }
 
 	void OnPlayerDied(player player)
@@ -45,4 +46,16 @@ public class PlayerManager : NetworkBehaviour
 	{
 		ServerGameNetPortal.Instance.EndRound();
 	}
+    void OnHitGiven()
+    {
+        int max = _players.Max(player => player.KillCount);
+        foreach (var p in _players)
+        {
+            if (p.KillCount == max)
+                p.GetComponentInChildren<PlayerUI>().SetCrowns();
+            else
+                p.GetComponentInChildren<PlayerUI>().UnsetCrowns();
+
+        }
+    }
 }

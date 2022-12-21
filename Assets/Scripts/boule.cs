@@ -43,6 +43,7 @@ public class boule : MonoBehaviour
             }
             if(player.Collide == false)
             {
+                launcher.HitGiven?.Invoke();
                 player.TakeDamage();
                 launcher.InflictDamage();
             }  
