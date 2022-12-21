@@ -10,8 +10,10 @@ using UnityEngine.UI;
 public class player : NetworkBehaviour
 {
     //Body
-    public Rigidbody2D _rb;
-    public CapsuleCollider2D _cc;
+    [SerializeField]
+    private Rigidbody2D _rb;
+    [SerializeField]
+    private CapsuleCollider2D _cc;
     [SerializeField]
     private SpriteRenderer _sr;
 
@@ -63,6 +65,9 @@ public class player : NetworkBehaviour
         if (!IsOwner)
             return;
 
+        _rb = GetComponent<Rigidbody2D>();
+        _cc = GetComponent<CapsuleCollider2D>();
+        
         //Shoot
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
