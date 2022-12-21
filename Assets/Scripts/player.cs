@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class player : MonoBehaviour
+public class player : NetworkBehaviour
 {
     //Body
     public Rigidbody2D _rb;
@@ -17,7 +18,7 @@ public class player : MonoBehaviour
     //Move
     public InputActionAsset controls;
     [SerializeField]
-    private float speed;
+    private float speed = 2;
     private Vector2 newPos;
 
     //Shoot
@@ -45,7 +46,7 @@ public class player : MonoBehaviour
     private float TimerCollisionMax;
     private float TimerCollision;
 
-    public bool canMove;
+    public bool canMove = true;
 
 	public int KillCount { get; set; }
 	public int Health { get; set; }
@@ -57,27 +58,21 @@ public class player : MonoBehaviour
 	
 	public static Action MaxKillCountChanged { get; set; }
 
-	public static List<player> Players { get; } = new List<player>();
-
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        if (canMove)
+        if (!IsOwner)
+            return;
+
+        //Shoot
+        controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
-            //Shoot
-            camera = Camera.main;
-            controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
-            {
-                if(canShoot == true)
-                {
-                    Shoot();
-                }     
-            };
-            controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
-            {
-                Reload();
-            };
-            controls.Enable();      
-        }
+            Shoot();
+        };
+        controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
+        {
+            Reload();
+        };
+        controls.Enable();
 
         //Reload
         canShoot = false;
@@ -92,30 +87,42 @@ public class player : MonoBehaviour
         TimerCollision = TimerCollisionMax;
     }
 
-	void OnEnable()
+	void OnStartClient()
 	{
-		Players.Add(this);
+        if (!IsOwner)
+            return;
+
+        camera = Camera.main;
+        Health = 3;
 	}
 
-	void Start()
-	{
-		Health = 3;
-	}
-
-	public void Update()
+    private void Update()
     {
+        if (!IsOwner)
+           return;
+
+        // var moveDir = new Vector3(0, 0, 0);
+        //
+        // if (Input.GetKey(KeyCode.Z)) moveDir.y += 1f;
+        // if (Input.GetKey(KeyCode.S)) moveDir.y -= 1f;
+        // if (Input.GetKey(KeyCode.Q)) moveDir.x -= 1f;
+        // if (Input.GetKey(KeyCode.D)) moveDir.x += 1f;
+        //
+        // transform.position += moveDir * 2 * Time.deltaTime;
+        
         if (canMove)
         {
-            //Shoot
-            mousePosition = GetMousePosition();
+	        //Shoot
+	        mousePosition = GetMousePosition();
 
-            //Move
-            Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
-            newPos.x = inputVector.x * speed * Time.deltaTime;
-            newPos.y = inputVector.y * speed * Time.deltaTime;
+	        //Move
+	        Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
+	        Debug.Log(inputVector);
+	        newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
+	        newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
 
-            //Animation
-            animator.SetOrientation(inputVector.x, inputVector.y);
+	        //Animation
+	        animator.SetOrientation(inputVector.x, inputVector.y);
 
             //Reload
             if (inputVector != Vector2.zero)
@@ -161,7 +168,7 @@ public class player : MonoBehaviour
                 _sr.material.color = Color.white;
             }
 
-            //Periode d'invincibilité apèrs une collision
+            //Periode d'invincibilitï¿½ apï¿½rs une collision
             if (TimerCollision <= 0)
             {
                 TimerCollision = TimerCollisionMax;
@@ -181,11 +188,6 @@ public class player : MonoBehaviour
         aimDirection = (mousePosition - _rb.position).normalized;
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
-
-	void OnDisable()
-	{
-		Players.Remove(this);
-	}
 
 	[ContextMenu("Shoot")]
 	public void Shoot()
@@ -208,14 +210,13 @@ public class player : MonoBehaviour
 
     public Vector2 GetMousePosition()
     {
-        if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
-        {
-            return hitInfo.point;
-        }
-        else
-        {
+        if (camera == null)
             return Vector2.zero;
-        }
+
+        if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
+            return hitInfo.point;
+        else
+            return Vector2.zero;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -240,14 +241,13 @@ public class player : MonoBehaviour
 
 	[ContextMenu("InflictDamage")]
 	public void InflictDamage()
-	{
-		int maxKillCount = Players.Max(player => player.KillCount);
-		
-		KillCount++;
+	{		
+        //TODO use Network Manager
+		/*KillCount++;
 		
 		if (KillCount > maxKillCount)
 			MaxKillCountChanged?.Invoke();
 		
-		HitGiven?.Invoke();
+		HitGiven?.Invoke();*/
 	}
 }

@@ -16,6 +16,7 @@ public class MainMenuUI : MonoBehaviour
 
     private void Start()
     {
+        
         PlayerPrefs.GetString("PlayerName");
         StartRelay();
     }
