@@ -58,7 +58,7 @@ public class player : NetworkBehaviour
 	
 	public static Action MaxKillCountChanged { get; set; }
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
         if (!IsOwner)
             return;
@@ -102,14 +102,14 @@ public class player : NetworkBehaviour
            return;
 
         // Todo : replace by a functional input system
-        var moveDir = new Vector3(0, 0, 0);
-
-        if (Input.GetKey(KeyCode.Z)) moveDir.y += 1f;
-        if (Input.GetKey(KeyCode.S)) moveDir.y -= 1f;
-        if (Input.GetKey(KeyCode.Q)) moveDir.x -= 1f;
-        if (Input.GetKey(KeyCode.D)) moveDir.x += 1f;
-
-        transform.position += moveDir * 2 * Time.deltaTime;
+        // var moveDir = new Vector3(0, 0, 0);
+        //
+        // if (Input.GetKey(KeyCode.Z)) moveDir.y += 1f;
+        // if (Input.GetKey(KeyCode.S)) moveDir.y -= 1f;
+        // if (Input.GetKey(KeyCode.Q)) moveDir.x -= 1f;
+        // if (Input.GetKey(KeyCode.D)) moveDir.x += 1f;
+        //
+        // transform.position += moveDir * 2 * Time.deltaTime;
         
         if (canMove)
         {
