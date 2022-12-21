@@ -1,14 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PlayerManager : NetworkBehaviour
 {
     [SerializeField] private GameObject prefab;
-
-    private List<player> _players = new List<player>();
+	[SerializeField] private List<Transform> _spawnPoints;
+	
+	private List<player> _players = new List<player>();
 
     private AudioManager audioManager;
 
@@ -24,7 +23,7 @@ public class PlayerManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SpawnPlayerServerRpc(ulong clientID)
     {
-        var playerGO = Instantiate(prefab);
+        var playerGO = Instantiate(prefab, _spawnPoints[_players.Count].position, Quaternion.identity);
 		player player = playerGO.GetComponent<player>();
         
 		_players.Add(player);
