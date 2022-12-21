@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +8,9 @@ public class PlayerUI : MonoBehaviour
 {
 	[SerializeField] player _player;
 
-	[SerializeField] Image _crownImage;
+	[SerializeField] TextMeshProUGUI _nameText;
+	[SerializeField] Image _rightCrownImage;
+	[SerializeField] Image _leftCrownImage;
 	[SerializeField] List<Image> _heartsImage;
 	[SerializeField] TextMeshProUGUI _scoreText;
 	[SerializeField] Image _snowballFillImage;
@@ -34,7 +34,9 @@ public class PlayerUI : MonoBehaviour
 
 	void Start()
 	{
-		_crownImage.enabled = false;
+		UnsetCrowns();
+
+		_nameText.text = $"{ServerGameNetPortal.Instance.GetPlayerData(_player.OwnerClientId)?.PlayerName}";
 	}
 
 	void OnDisable()
@@ -57,7 +59,7 @@ public class PlayerUI : MonoBehaviour
 	{
 		//TODO use network manager
 		/*if (player.Players.Max(player => player.KillCount) == _player.KillCount)
-			SetCrown();
+			SetCrowns();
 		
 		_scoreText.text = $"{_player.KillCount}";*/
 	}
@@ -74,24 +76,26 @@ public class PlayerUI : MonoBehaviour
 
 	void OnMaxKillCountChanged()
 	{
-		UnsetCrown();
+		UnsetCrowns();
 	}
 
-	void SetCrown()
+	void SetCrowns()
 	{
-		_crownImage.enabled = true;
+		_rightCrownImage.enabled = true;
+		_leftCrownImage.enabled = true;
 	}
 
-	void UnsetCrown()
+	void UnsetCrowns()
 	{
-		_crownImage.enabled = false;
+		_rightCrownImage.enabled = false;
+		_leftCrownImage.enabled = false;
 	}
 
 	IEnumerator RefillSnowball()
 	{
 		float timer = 0;
 
-		while (timer <= _player.timerReloadMax && _player.canReload == true)
+		while (timer <= _player.timerReloadMax && _player.canReload)
 		{
 			_snowballFillImage.fillAmount = Mathf.Lerp(0f, 1f, timer / _player.timerReloadMax);
 
@@ -99,10 +103,7 @@ public class PlayerUI : MonoBehaviour
 			
 			yield return null;
 		}
-		if(_player.canReload == false)
-        {
-			_snowballFillImage.fillAmount = 0f;
-        }
-
+		
+		_snowballFillImage.fillAmount = _player.canReload ? 1f : 0f;
 	}
 }
