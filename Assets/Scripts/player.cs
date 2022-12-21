@@ -9,8 +9,11 @@ using UnityEngine.UI;
 
 public class player : NetworkBehaviour
 {
+    //Body
     public Rigidbody2D _rb;
     public CapsuleCollider2D _cc;
+    [SerializeField]
+    private SpriteRenderer _sr;
 
     //Move
     public InputActionAsset controls;
@@ -28,13 +31,20 @@ public class player : NetworkBehaviour
     //Reload
     private bool canShoot;
     private bool reload;
+    public bool canReload;
     public float timerReloadMax;
     private float timerReload;
-    [SerializeField]
-    private Slider _slider;
 
     //Animation
     public AnimatorFacade animator;
+    [SerializeField]
+    private float TimerClignoteMax;
+    private float TimerClignote;
+    private bool playerColor;
+    public bool Collide;
+    [SerializeField]
+    private float TimerCollisionMax;
+    private float TimerCollision;
 
     public bool canMove = true;
 
@@ -65,11 +75,16 @@ public class player : NetworkBehaviour
         controls.Enable();
 
         //Reload
-        canShoot = true;
+        canShoot = false;
         reload = false;
         timerReload = timerReloadMax;
-        _slider.gameObject.SetActive(false);
-        _slider.maxValue = timerReloadMax;
+
+        //Animation
+        TimerClignote = TimerClignoteMax;
+        playerColor = false;
+        Collide = false;
+
+        TimerCollision = TimerCollisionMax;
     }
 
 	void OnStartClient()
@@ -110,42 +125,76 @@ public class player : NetworkBehaviour
 	        //Animation
 	        animator.SetOrientation(inputVector.x, inputVector.y);
 
-	        //Reload
-	        _slider.gameObject.SetActive(reload);
-	        if (reload)
-	        {
-		        timerReload -= Time.fixedDeltaTime;
-		        _slider.value = timerReloadMax - timerReload;
-		        if (timerReload <= 0)
-		        {
-			        canShoot = true;
-			        timerReload = timerReloadMax;
-			        reload = false;
-		        }
-	        }
+            //Reload
+            if (inputVector != Vector2.zero)
+            {
+                canReload = false;
+                reload = false;
+                timerReload = timerReloadMax;
+                animator.ReloadAnimation(false);
+            }
+            else
+            {
+                canReload = true;
+            }
+            if (reload && canReload)
+            {
+                animator.ReloadAnimation(1 - (timerReload / timerReloadMax));
+                timerReload -= Time.deltaTime;
+                if(timerReload <= 0)
+                {   
+                    canShoot = true;
+                    timerReload = timerReloadMax;
+                    reload = false;
+                }
+            }
         }
-        
+
+        //Clignote en rouge
+        if (Collide)
+        {
+            TimerCollision -= Time.deltaTime;
+            TimerClignote -= Time.deltaTime;
+            if (TimerClignote <= 0)
+            {
+                playerColor = !playerColor;
+                TimerClignote = TimerClignoteMax;
+            }
+            if (!playerColor)
+            {
+                _sr.material.color = Color.red;
+            }
+            if (playerColor)
+            {
+                _sr.material.color = Color.white;
+            }
+
+            //Periode d'invincibilit� ap�rs une collision
+            if (TimerCollision <= 0)
+            {
+                TimerCollision = TimerCollisionMax;
+                _sr.material.color = Color.white;
+                TimerClignote = TimerClignoteMax;
+                Collide = false;
+            }
+        }  
+    }
+
+    public void FixedUpdate()
+    {
+        //Move
+        _rb.MovePosition(_rb.position + newPos);
+
         //Shoot
         aimDirection = (mousePosition - _rb.position).normalized;
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
 
-    public void FixedUpdate()
-    {
-        if (!IsOwner)
-            return;
-        
-        //Move
-        _rb.MovePosition(_rb.position + newPos);
-    }
-
 	[ContextMenu("Shoot")]
 	public void Shoot()
     {
-        if (canShoot == false)
-            return;
-
-        boule newBoul = Instantiate(b);
+        Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
+        boule newBoul = Instantiate(b , newBoulePos , Quaternion.identity);
         newBoul.angle = angle;
         newBoul.launcher = this;
         canShoot = false;
@@ -173,14 +222,22 @@ public class player : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        animator.Kill();
+        if(Health == 0)
+        {
+            animator.Kill();
+            Destroy(gameObject , 1);
+        }
+        if(Health > 0 && Collide == false)
+        {
+            Collide = true;
+        }
     }
 
 	[ContextMenu("TakeDamage")]
 	public void TakeDamage()
 	{
-		Health--;
-		HitTaken?.Invoke();
+        Health--;
+        HitTaken?.Invoke();
 	}
 
 	[ContextMenu("InflictDamage")]
