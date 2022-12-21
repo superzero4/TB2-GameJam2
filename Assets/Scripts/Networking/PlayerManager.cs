@@ -19,6 +19,7 @@ public class PlayerManager : NetworkBehaviour
     private void SpawnPlayerServerRpc(ulong clientID)
     {
         var player = Instantiate(prefab);
+        player.name = "Player " + clientID;
         _players.Add(player.GetComponent<player>());
         
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -921948338190618989}
   - component: {fileID: -4098732966252229842}
   - component: {fileID: 8694238742670366432}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Boule
   m_TagString: Boule
   m_Icon: {fileID: 0}
@@ -124,13 +124,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SyncPositionX: 1
   SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
+  SyncRotAngleZ: 0
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
