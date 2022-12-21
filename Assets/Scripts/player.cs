@@ -48,13 +48,6 @@ public class player : NetworkBehaviour
     private float TimerCollisionMax;
     private float TimerCollision;
 
-    //Konami
-    [SerializeField]
-    private float timerKonamiMax;
-    private float timerKonami;
-    private int indexKonami;
-    private KeyCode[] keysKonami;
-
     //Others
     public bool canMove = true;
 
@@ -104,23 +97,6 @@ public class player : NetworkBehaviour
         Collide = false;
 
         TimerCollision = TimerCollisionMax;
-
-        //Konami
-        timerKonami = timerKonamiMax;
-        indexKonami = 0;
-        keysKonami = new KeyCode[]
-        {
-            KeyCode.UpArrow,
-            KeyCode.UpArrow,
-            KeyCode.DownArrow,
-            KeyCode.DownArrow,
-            KeyCode.LeftArrow,
-            KeyCode.RightArrow,
-            KeyCode.LeftArrow,
-            KeyCode.RightArrow,
-            KeyCode.B,
-            KeyCode.A,
-        };
 
         if (!IsOwner)
             return;
@@ -208,38 +184,7 @@ public class player : NetworkBehaviour
                 TimerClignote = TimerClignoteMax;
                 Collide = false;
             }
-        }
-
-        //Konami Code
-        Debug.Log("index : " + indexKonami);
-        Debug.Log("timer : " + timerKonami);
-        if (Input.GetKeyDown(keysKonami[indexKonami]))
-        {
-            indexKonami++;
-            timerKonami = timerKonamiMax;
-        }
-        //foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
-        //{
-        //    if (Input.GetKeyDown(kcode) != Input.GetKeyDown(keysKonami[indexKonami]))
-        //    {
-        //        indexKonami = 0;
-        //        timerKonami = timerKonamiMax; ;
-        //    }
-        //}
-        if (indexKonami == keysKonami.Length)
-        {
-            indexKonami = 0;
-            Debug.Log("KONAMI");
-        }
-        if (indexKonami > 0)
-        {
-            timerKonami -= Time.deltaTime;
-        }
-        if (timerKonami < 0)
-        {
-            indexKonami = 0;
-            timerKonami = timerKonamiMax;
-        }
+        }        
     }
 
     public void FixedUpdate()
