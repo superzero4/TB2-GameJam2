@@ -101,7 +101,6 @@ public class player : NetworkBehaviour
         if (!IsOwner)
            return;
 
-        // Todo : replace by a functional input system
         // var moveDir = new Vector3(0, 0, 0);
         //
         // if (Input.GetKey(KeyCode.Z)) moveDir.y += 1f;
