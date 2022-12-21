@@ -24,9 +24,21 @@ public class PlayerManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SpawnPlayerServerRpc(ulong clientID)
     {
-        var player = Instantiate(prefab);
-        _players.Add(player.GetComponent<player>());
+        var playerGO = Instantiate(prefab);
+		player player = playerGO.GetComponent<player>();
         
-        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
+		_players.Add(player);
+
+        playerGO.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
+        
+		player.Died += OnPlayerDied;
     }
+
+	void OnPlayerDied(player player)
+	{
+		_players.Remove(player);
+		
+		if (_players.Count == 0)
+			ServerGameNetPortal.Instance.EndRound();
+	}
 }
