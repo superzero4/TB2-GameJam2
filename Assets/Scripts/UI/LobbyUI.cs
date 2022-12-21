@@ -11,6 +11,7 @@ public class LobbyUI : NetworkBehaviour
     [SerializeField] private Button startGameButton;
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private TextMeshProUGUI text;
+    [SerializeField] private int minPlayer;
 
     private NetworkList<LobbyPlayerState> lobbyPlayers;
 
@@ -59,7 +60,7 @@ public class LobbyUI : NetworkBehaviour
 
     private bool IsEveryoneReady()
     {
-        if (lobbyPlayers.Count < 2)
+        if (lobbyPlayers.Count < minPlayer)
         {
             return false;
         }

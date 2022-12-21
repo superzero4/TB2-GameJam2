@@ -66,7 +66,10 @@ public class player : NetworkBehaviour
         //Shoot
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
-            Shoot();
+            if (canShoot)
+            {
+                Shoot();
+            }  
         };
         controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
         {
