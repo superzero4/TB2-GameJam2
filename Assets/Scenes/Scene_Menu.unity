@@ -376,6 +376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayNameInputField: {fileID: 934551835}
   displayCodeInputField: {fileID: 309619080}
+  audioManager: {fileID: 373007095}
 --- !u!1 &309619078
 GameObject:
   m_ObjectHideFlags: 0
@@ -716,6 +717,75 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &373007094
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 373007096}
+  - component: {fileID: 373007095}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &373007095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373007094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a4e13ebaa49c814385a7bcaa5388670, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  L_Sounds:
+  - Name: Boule
+    clip: {fileID: 8300000, guid: 7aee32fcd64cfba46a495f9f8d42203a, type: 3}
+    volume: 0.13
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+  - Name: Musique
+    clip: {fileID: 8300000, guid: aa45682d6ffed05428244bbcb5c08ff2, type: 3}
+    volume: 0.06
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+  - Name: Aie
+    clip: {fileID: 8300000, guid: 4129861db8fee1f4284c3f7f6217eba6, type: 3}
+    volume: 0.06
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+  - Name: Game
+    clip: {fileID: 8300000, guid: 3b517b8545f3eb44c836957c637a8e32, type: 3}
+    volume: 0.06
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+--- !u!4 &373007096
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 373007094}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 37.69752, y: 79.163635, z: -2.3216925}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &564960885
 GameObject:

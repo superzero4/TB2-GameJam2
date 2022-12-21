@@ -13,6 +13,7 @@ public class MainMenuUI : MonoBehaviour
     [Header("References")]
     [SerializeField] private TMP_InputField displayNameInputField;
     [SerializeField] private TMP_InputField displayCodeInputField;
+    [SerializeField] private AudioManager audioManager;
 
     private void Start()
     {
@@ -31,6 +32,8 @@ public class MainMenuUI : MonoBehaviour
         };
 
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+        audioManager.Play("Musique");
     }
 
     public void OnHostClicked()

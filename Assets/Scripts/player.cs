@@ -55,6 +55,7 @@ public class player : NetworkBehaviour
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }
+	public Action<player> Died { get; set; }
 	
 	public static Action MaxKillCountChanged { get; set; }
 
@@ -208,17 +209,14 @@ public class player : NetworkBehaviour
     {
         if (camera == null)
         {
-            Debug.Log("null");
             return Vector2.zero;
         }
         else if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
         {
-            //Debug.Log("ok " + hitInfo.point);
             return hitInfo.point;
         }   
         else
         {
-            Debug.Log("zero");
             return Vector2.zero;
         }
     }
@@ -230,6 +228,7 @@ public class player : NetworkBehaviour
         if(_health.Value == 0)
         {
             animator.Kill();
+			Died?.Invoke(this);
             Destroy(gameObject , 1);
         }
         if(_health.Value > 0 && collide.Value == false)
