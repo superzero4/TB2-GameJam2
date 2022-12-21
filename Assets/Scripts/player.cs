@@ -71,7 +71,10 @@ public class player : NetworkBehaviour
         //Shoot
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
-            Shoot();
+            if (canShoot)
+            {
+                Shoot();
+            }  
         };
         controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
         {
@@ -90,16 +93,13 @@ public class player : NetworkBehaviour
         Collide = false;
 
         TimerCollision = TimerCollisionMax;
-    }
 
-	void OnStartClient()
-	{
         if (!IsOwner)
             return;
 
         camera = Camera.main;
         Health = 3;
-	}
+    }
 
     private void Update()
     {
@@ -122,7 +122,6 @@ public class player : NetworkBehaviour
 
 	        //Move
 	        Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
-	        Debug.Log(inputVector);
 	        newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
 	        newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
 
@@ -216,12 +215,20 @@ public class player : NetworkBehaviour
     public Vector2 GetMousePosition()
     {
         if (camera == null)
+        {
+            Debug.Log("null");
             return Vector2.zero;
-
-        if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
+        }
+        else if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
+        {
+            Debug.Log("ok");
             return hitInfo.point;
+        }   
         else
+        {
+            Debug.Log("zero");
             return Vector2.zero;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

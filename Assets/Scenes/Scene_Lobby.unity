@@ -186,6 +186,10 @@ PrefabInstance:
       propertyPath: text
       value: 
       objectReference: {fileID: 1708606101}
+    - target: {fileID: 1674675022, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
+      propertyPath: minPlayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2587486420334744047, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
