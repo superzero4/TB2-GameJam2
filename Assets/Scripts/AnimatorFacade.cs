@@ -75,7 +75,7 @@ public class AnimatorFacade : MonoBehaviour
             }
             //We use the first 3 frames as first 3 and last 3
             value = progress * (FirstFrameOfLoop / EaseInOut);
-            Debug.Log("Middle : " + value);
+            //Debug.Log("Middle : " + value);
         }
         value = (float)Mathf.FloorToInt(value) / lengthOfDeathClip.Value;
         //Debug.Log("Final value , " + value);

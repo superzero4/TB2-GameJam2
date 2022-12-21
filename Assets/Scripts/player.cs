@@ -73,7 +73,9 @@ public class player : NetworkBehaviour
         {
             if (canShoot)
             {
-                Shoot();
+                Vector2 dir = new Vector2(GetMousePosition().x, GetMousePosition().y);
+                ShootServerRpc(dir, angle);
+                canShoot = false;
             }  
         };
         controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
@@ -194,14 +196,17 @@ public class player : NetworkBehaviour
     }
 
 	[ContextMenu("Shoot")]
-	public void Shoot()
+    [ServerRpc]
+	public void ShootServerRpc(Vector2 shootDirection, float angle)
     {
+        Debug.Log(shootDirection);
+
         Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
         boule newBoul = Instantiate(b , newBoulePos , Quaternion.identity);
+        newBoul.GetComponent<NetworkObject>().Spawn();
         newBoul.angle = angle;
         newBoul.launcher = this;
-        canShoot = false;
-        animator.ShootToward(GetMousePosition().x, GetMousePosition().y);
+        animator.ShootToward(shootDirection.x, shootDirection.y);
     
 		SnowballThrown?.Invoke();
     }
@@ -221,7 +226,7 @@ public class player : NetworkBehaviour
         }
         else if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
         {
-            Debug.Log("ok");
+            //Debug.Log("ok " + hitInfo.point);
             return hitInfo.point;
         }   
         else

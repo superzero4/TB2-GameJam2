@@ -1,6 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class boule : MonoBehaviour
@@ -52,6 +50,12 @@ public class boule : MonoBehaviour
         _renderer.enabled = false;
         _collider.enabled = false;
         _rb.velocity = Vector2.zero;
-        Destroy(gameObject , 2);
+        DestroyServerRpc();
+    }
+
+    [ServerRpc]
+    private void DestroyServerRpc()
+    {
+        Destroy(gameObject, 2);
     }
 }
