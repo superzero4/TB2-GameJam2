@@ -37,7 +37,12 @@ public class PlayerManager : NetworkBehaviour
 	{
 		_players.Remove(player);
 		
-		if (_players.Count == 0)
-			ServerGameNetPortal.Instance.EndRound();
+		if (_players.Count == 1)
+			Invoke(nameof(EndRound), 2f);
+	}
+
+	void EndRound()
+	{
+		ServerGameNetPortal.Instance.EndRound();
 	}
 }
