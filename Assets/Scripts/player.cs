@@ -48,18 +48,26 @@ public class player : NetworkBehaviour
     private float TimerCollisionMax;
     private float TimerCollision;
 
+    //Konami
+    [SerializeField]
+    private float timerKonamiMax;
+    private float timerKonami;
+    private int indexKonami;
+    private KeyCode[] keysKonami;
+
+    //Others
     public bool canMove = true;
 
-	public int KillCount { get; set; }
-	public int Health { get; set; }
+    public int KillCount { get; set; }
+    public int Health { get; set; }
 
-	public Action HitTaken { get; set; } 
-	public Action HitGiven { get; set; } 
-	public Action RefillSnowball { get; set; } 
-	public Action SnowballThrown { get; set; }
-	public Action<player> Died { get; set; }
-	
-	public static Action MaxKillCountChanged { get; set; }
+    public Action HitTaken { get; set; }
+    public Action HitGiven { get; set; }
+    public Action RefillSnowball { get; set; }
+    public Action SnowballThrown { get; set; }
+    public Action<player> Died { get; set; }
+
+    public static Action MaxKillCountChanged { get; set; }
 
     public override void OnNetworkSpawn()
     {
@@ -68,7 +76,7 @@ public class player : NetworkBehaviour
 
         _rb = GetComponent<Rigidbody2D>();
         _cc = GetComponent<CapsuleCollider2D>();
-        
+
         //Shoot
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
@@ -77,7 +85,7 @@ public class player : NetworkBehaviour
                 Vector2 dir = new Vector2(GetMousePosition().x, GetMousePosition().y);
                 ShootServerRpc(dir, angle);
                 canShoot = false;
-            }  
+            }
         };
         controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
         {
@@ -97,6 +105,23 @@ public class player : NetworkBehaviour
 
         TimerCollision = TimerCollisionMax;
 
+        //Konami
+        timerKonami = timerKonamiMax;
+        indexKonami = 0;
+        keysKonami = new KeyCode[]
+        {
+            KeyCode.UpArrow,
+            KeyCode.UpArrow,
+            KeyCode.DownArrow,
+            KeyCode.DownArrow,
+            KeyCode.LeftArrow,
+            KeyCode.RightArrow,
+            KeyCode.LeftArrow,
+            KeyCode.RightArrow,
+            KeyCode.B,
+            KeyCode.A,
+        };
+
         if (!IsOwner)
             return;
 
@@ -107,7 +132,7 @@ public class player : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner)
-           return;
+            return;
 
         // var moveDir = new Vector3(0, 0, 0);
         //
@@ -117,19 +142,19 @@ public class player : NetworkBehaviour
         // if (Input.GetKey(KeyCode.D)) moveDir.x += 1f;
         //
         // transform.position += moveDir * 2 * Time.deltaTime;
-        
+
         if (canMove)
         {
-	        //Shoot
-	        mousePosition = GetMousePosition();
+            //Shoot
+            mousePosition = GetMousePosition();
 
-	        //Move
-	        Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
-	        newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
-	        newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
+            //Move
+            Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
+            newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
+            newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
 
-	        //Animation
-	        animator.SetOrientation(inputVector.x, inputVector.y);
+            //Animation
+            animator.SetOrientation(inputVector.x, inputVector.y);
 
             //Reload
             if (inputVector != Vector2.zero)
@@ -147,8 +172,8 @@ public class player : NetworkBehaviour
             {
                 animator.ReloadAnimation(1 - (timerReload / timerReloadMax));
                 timerReload -= Time.deltaTime;
-                if(timerReload <= 0)
-                {   
+                if (timerReload <= 0)
+                {
                     canShoot = true;
                     timerReload = timerReloadMax;
                     reload = false;
@@ -183,7 +208,38 @@ public class player : NetworkBehaviour
                 TimerClignote = TimerClignoteMax;
                 Collide = false;
             }
-        }  
+        }
+
+        //Konami Code
+        Debug.Log("index : " + indexKonami);
+        Debug.Log("timer : " + timerKonami);
+        if (Input.GetKeyDown(keysKonami[indexKonami]))
+        {
+            indexKonami++;
+            timerKonami = timerKonamiMax;
+        }
+        //foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
+        //{
+        //    if (Input.GetKeyDown(kcode) != Input.GetKeyDown(keysKonami[indexKonami]))
+        //    {
+        //        indexKonami = 0;
+        //        timerKonami = timerKonamiMax; ;
+        //    }
+        //}
+        if (indexKonami == keysKonami.Length)
+        {
+            indexKonami = 0;
+            Debug.Log("KONAMI");
+        }
+        if (indexKonami > 0)
+        {
+            timerKonami -= Time.deltaTime;
+        }
+        if (timerKonami < 0)
+        {
+            indexKonami = 0;
+            timerKonami = timerKonamiMax;
+        }
     }
 
     public void FixedUpdate()
@@ -196,20 +252,20 @@ public class player : NetworkBehaviour
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
 
-	[ContextMenu("Shoot")]
+    [ContextMenu("Shoot")]
     [ServerRpc]
-	public void ShootServerRpc(Vector2 shootDirection, float angle)
+    public void ShootServerRpc(Vector2 shootDirection, float angle)
     {
         Debug.Log(shootDirection);
 
         Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
-        boule newBoul = Instantiate(b , newBoulePos , Quaternion.identity);
+        boule newBoul = Instantiate(b, newBoulePos, Quaternion.identity);
         newBoul.GetComponent<NetworkObject>().Spawn();
         newBoul.angle = angle;
         newBoul.launcher = this;
         animator.ShootToward(shootDirection.x, shootDirection.y);
-    
-		SnowballThrown?.Invoke();
+
+        SnowballThrown?.Invoke();
     }
 
     public void Reload()
@@ -227,7 +283,7 @@ public class player : NetworkBehaviour
         else if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
         {
             return hitInfo.point;
-        }   
+        }
         else
         {
             return Vector2.zero;
@@ -236,34 +292,34 @@ public class player : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(Health == 0)
+        if (Health == 0)
         {
             animator.Kill();
-			Died?.Invoke(this);
-            Destroy(gameObject , 1);
+            Died?.Invoke(this);
+            Destroy(gameObject, 1);
         }
-        if(Health > 0 && Collide == false)
+        if (Health > 0 && Collide == false)
         {
             Collide = true;
         }
     }
 
-	[ContextMenu("TakeDamage")]
-	public void TakeDamage()
-	{
+    [ContextMenu("TakeDamage")]
+    public void TakeDamage()
+    {
         Health--;
         HitTaken?.Invoke();
-	}
+    }
 
-	[ContextMenu("InflictDamage")]
-	public void InflictDamage()
-	{		
+    [ContextMenu("InflictDamage")]
+    public void InflictDamage()
+    {
         //TODO use Network Manager
-		/*KillCount++;
+        /*KillCount++;
 		
 		if (KillCount > maxKillCount)
 			MaxKillCountChanged?.Invoke();
 		
 		HitGiven?.Invoke();*/
-	}
+    }
 }
