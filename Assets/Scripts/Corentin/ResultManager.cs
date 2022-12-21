@@ -26,23 +26,17 @@ public class ResultManager : MonoBehaviour
 
 	void Awake()
 	{
-		_playersData = new List<PlayerData>
-		{
-			new PlayerData("Krantt", 0),
-			new PlayerData("bbbbbb", 1),
-			new PlayerData("ttnarK", 2),
-			new PlayerData("Pas Krantt", 3),
-		};
-		
-		/*foreach (var client in NetworkManager.Singleton.ConnectedClients.Values)
+		_playersData = new List<PlayerData>();
+
+		foreach (var client in NetworkManager.Singleton.ConnectedClients.Values)
 		{
 			PlayerData? playerData = ServerGameNetPortal.Instance.GetPlayerData(client.ClientId);
 
-			if (playerData is null)
+			if (!playerData.HasValue)
 				continue;
 			
 			_playersData.Add(playerData.Value);
-		}*/
+		}
 	}
 
 	IEnumerator Start()
@@ -87,12 +81,12 @@ public class ResultManager : MonoBehaviour
 
 	public void PlayAgain()
 	{
-		Debug.Log("Play again !");
+		ServerGameNetPortal.Instance.PlayAgain();
 	}
 
 	public void Quit()
 	{
-		Debug.Log("Quit !");
+		Application.Quit();
 	}
 
 	IEnumerator Move(Transform player, Vector3 to, Action onCompleted)

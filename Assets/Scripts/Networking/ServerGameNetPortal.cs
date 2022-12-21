@@ -97,8 +97,13 @@ public class ServerGameNetPortal : MonoBehaviour
     {
         gameInProgress = false;
 
-        NetworkManager.Singleton.SceneManager.LoadScene("Scene_Lobby", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene("Scene_Result", LoadSceneMode.Single);
     }
+
+	public void PlayAgain()
+	{
+		NetworkManager.Singleton.SceneManager.LoadScene("Scene_Lobby", LoadSceneMode.Single);
+	}
 
     private void HandleNetworkReadied()
     {
