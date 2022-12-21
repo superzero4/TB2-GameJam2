@@ -5,31 +5,28 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class player : NetworkBehaviour
 {
     //Body
-    [SerializeField]
-    private Rigidbody2D _rb;
-    [SerializeField]
-    private CapsuleCollider2D _cc;
-    [SerializeField]
-    private SpriteRenderer _sr;
+    [SerializeField] private Rigidbody2D _rb;
+    [SerializeField] private CapsuleCollider2D _cc;
+    [SerializeField] private SpriteRenderer _sr;
 
     //Move
     public InputActionAsset controls;
-    [SerializeField]
-    private float speed = 2;
+    [SerializeField] private float speed = 2;
     private Vector2 newPos;
 
     //Shoot
     public float angle;
-    [SerializeField]
-    private boule b;
+    [SerializeField] private boule b;
     private Vector2 aimDirection;
     private Vector2 mousePosition;
     private new Camera camera;
+    
     //Reload
     private bool canShoot;
     private bool reload;
@@ -39,28 +36,28 @@ public class player : NetworkBehaviour
 
     //Animation
     public AnimatorFacade animator;
-    [SerializeField]
-    private float TimerClignoteMax;
+    [SerializeField] private float TimerClignoteMax;
     private float TimerClignote;
     private bool playerColor;
-    public bool Collide;
-    [SerializeField]
-    private float TimerCollisionMax;
+    public NetworkVariable<bool> collide = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    [SerializeField] private float TimerCollisionMax;
     private float TimerCollision;
 
-    //Others
     public bool canMove = true;
 
-    public int KillCount { get; set; }
-    public int Health { get; set; }
+	public int KillCount { get; set; }
+    
+    [SerializeField] private int initialHealth = 3;
+    private NetworkVariable<int> _health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
-    public Action HitTaken { get; set; }
-    public Action HitGiven { get; set; }
-    public Action RefillSnowball { get; set; }
-    public Action SnowballThrown { get; set; }
-    public Action<player> Died { get; set; }
-
-    public static Action MaxKillCountChanged { get; set; }
+	public Action HitTaken { get; set; } 
+	public Action HitGiven { get; set; } 
+	public Action RefillSnowball { get; set; } 
+	public Action SnowballThrown { get; set; }
+	public Action<player> Died { get; set; }
+	
+	public static Action MaxKillCountChanged { get; set; }
 
     public override void OnNetworkSpawn()
     {
@@ -70,6 +67,8 @@ public class player : NetworkBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _cc = GetComponent<CapsuleCollider2D>();
 
+        _health.Value = initialHealth;
+        
         //Shoot
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
@@ -78,7 +77,7 @@ public class player : NetworkBehaviour
                 Vector2 dir = new Vector2(GetMousePosition().x, GetMousePosition().y);
                 ShootServerRpc(dir, angle);
                 canShoot = false;
-            }
+            }  
         };
         controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
         {
@@ -94,43 +93,30 @@ public class player : NetworkBehaviour
         //Animation
         TimerClignote = TimerClignoteMax;
         playerColor = false;
-        Collide = false;
+        collide.Value = false;
 
         TimerCollision = TimerCollisionMax;
 
-        if (!IsOwner)
-            return;
-
         camera = Camera.main;
-        Health = 3;
     }
 
     private void Update()
     {
         if (!IsOwner)
-            return;
-
-        // var moveDir = new Vector3(0, 0, 0);
-        //
-        // if (Input.GetKey(KeyCode.Z)) moveDir.y += 1f;
-        // if (Input.GetKey(KeyCode.S)) moveDir.y -= 1f;
-        // if (Input.GetKey(KeyCode.Q)) moveDir.x -= 1f;
-        // if (Input.GetKey(KeyCode.D)) moveDir.x += 1f;
-        //
-        // transform.position += moveDir * 2 * Time.deltaTime;
-
+           return;
+        
         if (canMove)
         {
-            //Shoot
-            mousePosition = GetMousePosition();
+	        //Shoot
+	        mousePosition = GetMousePosition();
 
-            //Move
-            Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
-            newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
-            newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
+	        //Move
+	        Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
+	        newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
+	        newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
 
-            //Animation
-            animator.SetOrientation(inputVector.x, inputVector.y);
+	        //Animation
+	        animator.SetOrientation(inputVector.x, inputVector.y);
 
             //Reload
             if (inputVector != Vector2.zero)
@@ -148,8 +134,8 @@ public class player : NetworkBehaviour
             {
                 animator.ReloadAnimation(1 - (timerReload / timerReloadMax));
                 timerReload -= Time.deltaTime;
-                if (timerReload <= 0)
-                {
+                if(timerReload <= 0)
+                {   
                     canShoot = true;
                     timerReload = timerReloadMax;
                     reload = false;
@@ -158,7 +144,7 @@ public class player : NetworkBehaviour
         }
 
         //Clignote en rouge
-        if (Collide)
+        if (collide.Value)
         {
             TimerCollision -= Time.deltaTime;
             TimerClignote -= Time.deltaTime;
@@ -182,9 +168,9 @@ public class player : NetworkBehaviour
                 TimerCollision = TimerCollisionMax;
                 _sr.material.color = Color.white;
                 TimerClignote = TimerClignoteMax;
-                Collide = false;
+                collide.Value = false;
             }
-        }        
+        }  
     }
 
     public void FixedUpdate()
@@ -197,19 +183,19 @@ public class player : NetworkBehaviour
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
 
-    [ContextMenu("Shoot")]
-    [ServerRpc]
-    public void ShootServerRpc(Vector2 shootDirection, float angle)
+	[ContextMenu("Shoot")]
+    [ServerRpc(RequireOwnership = false)]
+	public void ShootServerRpc(Vector2 shootDirection, float angle)
     {
         Debug.Log(shootDirection);
 
         Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
-        boule newBoul = Instantiate(b, newBoulePos, Quaternion.identity);
+        boule newBoul = Instantiate(b , newBoulePos , Quaternion.identity);
         newBoul.GetComponent<NetworkObject>().Spawn();
         newBoul.angle = angle;
         newBoul.launcher = this;
         animator.ShootToward(shootDirection.x, shootDirection.y);
-
+    
         SnowballThrown?.Invoke();
     }
 
@@ -228,7 +214,7 @@ public class player : NetworkBehaviour
         else if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
         {
             return hitInfo.point;
-        }
+        }   
         else
         {
             return Vector2.zero;
@@ -237,34 +223,43 @@ public class player : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (Health == 0)
+        if (!IsOwner) return;
+        
+        if(_health.Value == 0)
         {
             animator.Kill();
-            Died?.Invoke(this);
-            Destroy(gameObject, 1);
+			Died?.Invoke(this);
+            Destroy(gameObject , 1);
         }
-        if (Health > 0 && Collide == false)
+        if(_health.Value > 0 && collide.Value == false)
         {
-            Collide = true;
+            collide.Value = true;
         }
     }
 
-    [ContextMenu("TakeDamage")]
-    public void TakeDamage()
+	[ContextMenu("TakeDamage")]
+	public void TakeDamage(ulong clientId)
+	{
+        TakeDamageClientRpc(clientId);
+    }
+
+    [ClientRpc]
+    private void TakeDamageClientRpc(ulong clientId)
     {
-        Health--;
+        if (clientId != NetworkManager.Singleton.LocalClientId) return;
+        _health.Value--;
         HitTaken?.Invoke();
     }
 
-    [ContextMenu("InflictDamage")]
-    public void InflictDamage()
-    {
+	[ContextMenu("InflictDamage")]
+	public void InflictDamage()
+	{		
         //TODO use Network Manager
-        /*KillCount++;
+		/*KillCount++;
 		
 		if (KillCount > maxKillCount)
 			MaxKillCountChanged?.Invoke();
 		
 		HitGiven?.Invoke();*/
-    }
+	}
 }

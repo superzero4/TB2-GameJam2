@@ -1,7 +1,8 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class boule : MonoBehaviour
+public class boule : NetworkBehaviour
 {
     public float angle;
     [SerializeField]
@@ -32,18 +33,20 @@ public class boule : MonoBehaviour
         //Audio
         audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
     }
-
+    
     private void OnTriggerEnter2D(Collider2D collision)
-    {    
+    {
+        if (!IsServer) return;
+        
         if (collision.TryGetComponent(out player player))
         {
             if(player == launcher)
             {
                 return;
             }
-            if(player.Collide == false)
+            if(player.collide.Value == false)
             {
-                player.TakeDamage();
+                player.TakeDamage(player.OwnerClientId);
                 launcher.InflictDamage();
             }  
         }
@@ -60,6 +63,7 @@ public class boule : MonoBehaviour
     [ServerRpc]
     private void DestroyServerRpc()
     {
+        GetComponent<NetworkObject>().Despawn();
         Destroy(gameObject, 2);
         audioManager.Play("Boule");
     }

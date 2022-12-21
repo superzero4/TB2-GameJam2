@@ -15,10 +15,11 @@ GameObject:
   - component: {fileID: 4380098147752310651}
   - component: {fileID: 3442484099491902673}
   - component: {fileID: 6053752513294360652}
+  - component: {fileID: 6023958239995519705}
   - component: {fileID: 3767211430828652929}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,10 +64,12 @@ MonoBehaviour:
   timerReloadMax: 1.5
   animator: {fileID: 2091875566589991457}
   TimerClignoteMax: 0.5
-  Collide: 0
+  collide:
+    m_InternalValue: 0
   TimerCollisionMax: 3
   timerKonamiMax: 2
   canMove: 1
+  initialHealth: 3
 --- !u!50 &5660017372100096618
 Rigidbody2D:
   serializedVersion: 4
@@ -165,8 +168,8 @@ MonoBehaviour:
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
   SyncRotAngleZ: 0
   SyncScaleX: 0
   SyncScaleY: 0
@@ -176,6 +179,18 @@ MonoBehaviour:
   ScaleThreshold: 0.01
   InLocalSpace: 0
   Interpolate: 1
+--- !u!114 &6023958239995519705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769185724038163820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3767211430828652929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,7 +264,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6098547037242079847, guid: b38f2c67e9e268d4ca28c00d46358b92, type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b38f2c67e9e268d4ca28c00d46358b92, type: 3}
