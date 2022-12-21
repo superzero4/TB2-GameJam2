@@ -57,6 +57,7 @@ public class player : NetworkBehaviour
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }
+	public Action<player> Died { get; set; }
 	
 	public static Action MaxKillCountChanged { get; set; }
 
@@ -238,6 +239,7 @@ public class player : NetworkBehaviour
         if(Health == 0)
         {
             animator.Kill();
+			Died?.Invoke(this);
             Destroy(gameObject , 1);
         }
         if(Health > 0 && Collide == false)
