@@ -15,6 +15,7 @@ public class boule : MonoBehaviour
     private Collider2D _collider;
     [SerializeField]
     private Renderer _renderer;
+    private AudioManager audioManager;
 
     void Start()
     {
@@ -27,6 +28,9 @@ public class boule : MonoBehaviour
 
         //Particles
         _ps.Play();
+
+        //Audio
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -57,5 +61,6 @@ public class boule : MonoBehaviour
     private void DestroyServerRpc()
     {
         Destroy(gameObject, 2);
+        audioManager.Play("Boule");
     }
 }

@@ -10,9 +10,15 @@ public class PlayerManager : NetworkBehaviour
 
     private List<player> _players = new List<player>();
 
+    private AudioManager audioManager;
+
     public override void OnNetworkSpawn()
     {
         SpawnPlayerServerRpc(NetworkManager.Singleton.LocalClientId);
+
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+        audioManager.Stop("Musique");
+        audioManager.Play("Game");
     }
 
     [ServerRpc(RequireOwnership = false)]

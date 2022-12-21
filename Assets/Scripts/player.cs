@@ -221,17 +221,14 @@ public class player : NetworkBehaviour
     {
         if (camera == null)
         {
-            Debug.Log("null");
             return Vector2.zero;
         }
         else if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
         {
-            //Debug.Log("ok " + hitInfo.point);
             return hitInfo.point;
         }   
         else
         {
-            Debug.Log("zero");
             return Vector2.zero;
         }
     }
