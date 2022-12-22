@@ -101,6 +101,7 @@ public class player : NetworkBehaviour
         controls.FindActionMap("Player").FindAction("Pause").performed += ctx =>
         {
             Pause();
+            Debug.Log("pause");
         };
 
         //Reload
