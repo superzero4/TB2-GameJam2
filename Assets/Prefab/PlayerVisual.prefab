@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6098547037242079841}
   - component: {fileID: 6098547037242079840}
   - component: {fileID: 4146614112654212086}
-  - component: {fileID: -4377439949403962127}
+  - component: {fileID: 8163787746872931947}
   m_Layer: 0
   m_Name: PlayerVisual
   m_TagString: Untagged
@@ -124,7 +124,8 @@ MonoBehaviour:
   - {fileID: 9100000, guid: aa2ab1bb0cc99004aa41298e6c95ccb9, type: 2}
   - {fileID: 22100000, guid: eadbf57e2a43da442ba12ada4994e84d, type: 2}
   - {fileID: 22100000, guid: 2bd661a1f06565949a56139299ea8e3c, type: 2}
-  - {fileID: 22100000, guid: 97c47de00f011cf41a4f71ea44340dca, type: 2}
+  - {fileID: 22100000, guid: e12166a97fd129a488c431602ef794ed, type: 2}
+  - {fileID: 22100000, guid: 539b0a9474150a64a934dba3850252a5, type: 2}
   _frameOnProgress:
     serializedVersion: 2
     m_Curve:
@@ -167,7 +168,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &-4377439949403962127
+--- !u!114 &8163787746872931947
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,7 +177,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6098547037242079847}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Script: {fileID: 11500000, guid: ad8deae8091111f4eb30a56c1f4e0d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
