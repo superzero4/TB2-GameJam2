@@ -17,6 +17,12 @@ public class BannerUI : MonoBehaviour
 		_nameText.text = playerData.PlayerName;
 		//_scoreText.text = $"{playerData.KillCount}";
 	}
+	
+	public void SetData(string playerName)
+	{
+		_nameText.text = playerName;
+		//_scoreText.text = $"{playerData.KillCount}";
+	}
 
 	public IEnumerator Show()
 	{

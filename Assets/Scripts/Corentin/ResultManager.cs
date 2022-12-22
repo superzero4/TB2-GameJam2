@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ResultManager : MonoBehaviour
+public class ResultManager : NetworkBehaviour
 {
 	[SerializeField] float _speed;
 
@@ -22,71 +23,74 @@ public class ResultManager : MonoBehaviour
 
 	readonly WaitForSeconds _waitForSeconds = new WaitForSeconds(1);
 	
-	List<PlayerData> _playersData;
-
-	void Awake()
+	IEnumerator Start()
 	{
-		_playersData = new List<PlayerData>();
-
-		foreach (var client in NetworkManager.Singleton.ConnectedClients.Values)
+		if (!IsServer)
+			yield break;
+		
+		for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Values.Count(); i++)
 		{
+			NetworkClient client = NetworkManager.Singleton.ConnectedClients.ElementAt(i).Value;
+			
 			PlayerData? playerData = ServerGameNetPortal.Instance.GetPlayerData(client.ClientId);
 
 			if (!playerData.HasValue)
 				continue;
 			
-			_playersData.Add(playerData.Value);
-		}
-	}
-
-	IEnumerator Start()
-	{
-		for (int i = 0; i < _playersData.Count; i++)
-		{
-			var index = i;
-			
-			GameObject player = Instantiate(_playerPrefab, _spawnPoint.position, Quaternion.identity);
-			AnimatorFacade animatorFacade = player.GetComponent<AnimatorFacade>();
-			Animator animator = player.GetComponent<Animator>();
-
-			_banners[index].SetData(_playersData[index]);
-			animatorFacade.SetOrientation(1, 0);
-
-			StartCoroutine(Move(player.transform, _groundPoints[i].position, 
-				() =>
-				{
-					StartCoroutine(Move(player.transform, _bannerPoints[index].position, () =>
-					{
-						StartCoroutine(_banners[index].Show());
-
-						if (index == _playersData.Count - 1)
-						{
-							animatorFacade.Kill();
-							_buttonsCanvasGroup.alpha = 1f;
-							_playAgainButton.interactable = true;
-							_quitButton.interactable = true;
-						}
-						else
-						{
-							animatorFacade.SetOrientation(0, -1);
-						}
-					}));
-					
-					animatorFacade.SetOrientation(0, index != _playersData.Count - 1 ? 1 : -1);
-				}));
+			SpawnCharacterClientRPC(playerData.Value.PlayerName, NetworkManager.Singleton.ConnectedClients.Values.Count(), i);
 
 			yield return _waitForSeconds;
 		}
 	}
 
+	[ClientRpc]
+	void SpawnCharacterClientRPC(string playerName, int playerCount, int i)
+	{
+		var index = i;
+
+		GameObject player = Instantiate(_playerPrefab, _spawnPoint.position, Quaternion.identity);
+		AnimatorFacade animatorFacade = player.GetComponent<AnimatorFacade>();
+
+		_banners[index].SetData(playerName);
+		animatorFacade.SetOrientation(1, 0);
+
+		StartCoroutine(Move(player.transform, _groundPoints[i].position,
+			() =>
+			{
+				StartCoroutine(Move(player.transform, _bannerPoints[index].position, () =>
+				{
+					StartCoroutine(_banners[index].Show());
+
+					if (index == playerCount - 1)
+					{
+						animatorFacade.Kill();
+						_buttonsCanvasGroup.alpha = 1f;
+						_quitButton.interactable = true;
+						
+						if (IsServer)
+							_playAgainButton.interactable = true;
+					}
+					else
+					{
+						animatorFacade.SetOrientation(0, -1);
+					}
+				}));
+
+				animatorFacade.SetOrientation(0, index != playerCount - 1 ? 1 : -1);
+			}));
+	}
+
 	public void PlayAgain()
 	{
+		if (!IsServer)
+			return;
+		
 		ServerGameNetPortal.Instance.PlayAgain();
 	}
 
 	public void Quit()
 	{
-		Application.Quit();
+		GameNetPortal.Instance.RequestDisconnect();
 	}
 
 	IEnumerator Move(Transform player, Vector3 to, Action onCompleted)

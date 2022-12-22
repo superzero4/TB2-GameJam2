@@ -67,6 +67,7 @@ MonoBehaviour:
   collide:
     m_InternalValue: 0
   TimerCollisionMax: 3
+  timerKonamiMax: 2
   canMove: 1
   initialHealth: 3
 --- !u!50 &5660017372100096618

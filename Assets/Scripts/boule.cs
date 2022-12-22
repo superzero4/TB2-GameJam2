@@ -9,7 +9,9 @@ public class boule : NetworkBehaviour
     private float shootSpeed;
     [SerializeField]
     private Rigidbody2D _rb;
-    public player launcher;
+    public NetworkVariable<ulong> launcherId2 = new NetworkVariable<ulong>(25, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public ulong launcherId => launcherId2.Value;
+    public player launcher => PlayerManager.GetPlayer(launcherId);
     [SerializeField]
     private ParticleSystem _ps;
     [SerializeField]
@@ -40,7 +42,7 @@ public class boule : NetworkBehaviour
         
         if (collision.TryGetComponent(out player player))
         {
-            if(player == launcher)
+            if(player.OwnerClientId == launcherId)
             {
                 return;
             }
@@ -48,6 +50,7 @@ public class boule : NetworkBehaviour
             {
                 player.TakeDamage(player.OwnerClientId);
                 launcher.InflictDamage();
+                audioManager.Play("Aie");
             }  
         }
 
