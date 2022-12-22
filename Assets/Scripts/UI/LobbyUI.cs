@@ -13,12 +13,13 @@ public class LobbyUI : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private int minPlayer;
 
-    private NetworkList<LobbyPlayerState> lobbyPlayers;
+    public static NetworkList<LobbyPlayerState> lobbyPlayers;
 
     private void Awake()
     {
         lobbyPlayers = new NetworkList<LobbyPlayerState>();
         inputField.onSelect.AddListener(CopyToClipboard);
+        DontDestroyOnLoad(gameObject);
     }
 
     public override void OnNetworkSpawn()
@@ -44,7 +45,12 @@ public class LobbyUI : NetworkBehaviour
         inputField.text = PlayerPrefs.GetString("Code");
         text.text = NetworkManager.Singleton.LocalClientId.ToString();
     }
-
+    public void OnKonamiCode()
+    {
+        var p = lobbyPlayers[(int)OwnerClientId];
+        p.IsSpecialSkin = true;
+        lobbyPlayerCards[p.ClientId].UpdateImage(charThumbnails[4]);
+    }
     public override void OnDestroy()
     {
         base.OnDestroy();

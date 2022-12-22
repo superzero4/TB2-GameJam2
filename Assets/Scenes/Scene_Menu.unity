@@ -339,6 +339,7 @@ GameObject:
   m_Component:
   - component: {fileID: 270482318}
   - component: {fileID: 270482319}
+  - component: {fileID: 270482320}
   m_Layer: 0
   m_Name: UI_Menu
   m_TagString: Untagged
@@ -377,6 +378,22 @@ MonoBehaviour:
   displayNameInputField: {fileID: 934551835}
   displayCodeInputField: {fileID: 309619080}
   audioManager: {fileID: 373007095}
+--- !u!114 &270482320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 270482317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c439a0660d9b7b42b5d0b719dec26f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timerKonamiMax: 1
+  KonamiCodeEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &309619078
 GameObject:
   m_ObjectHideFlags: 0

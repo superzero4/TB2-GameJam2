@@ -6,8 +6,7 @@ public class AnimatorFacade : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
     [SerializeField] private RuntimeAnimatorController[] _controllers;
-    [SerializeField] private AnimationCurve _frameOnProgress;
-    float? lengthOfDeathClip;
+    lengthOfDeathClip;
     private const string X = "XDir";
     private const string Y = "YDir";
     private const string Death = "Death";

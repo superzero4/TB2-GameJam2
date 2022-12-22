@@ -313,6 +313,50 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2890392181480129904, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
   m_PrefabInstance: {fileID: 293607806}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &293607808 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2890392183066358572, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
+  m_PrefabInstance: {fileID: 293607806}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &293607809 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1674675022, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
+  m_PrefabInstance: {fileID: 293607806}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 293607808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea8a020e40c2c2443810c67a957f44e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &293607810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 293607808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c439a0660d9b7b42b5d0b719dec26f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timerKonamiMax: 0
+  KonamiCodeEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 293607809}
+        m_TargetAssemblyTypeName: LobbyUI, Assembly-CSharp
+        m_MethodName: OnKonamiCode
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &564960885
 GameObject:
   m_ObjectHideFlags: 0

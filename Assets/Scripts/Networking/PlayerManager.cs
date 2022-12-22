@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerManager : NetworkBehaviour
 {
     [SerializeField] private player prefab;
-	[SerializeField] private List<Transform> _spawnPoints;	
-	private List<player> _players = new List<player>();
+    [SerializeField] private List<Transform> _spawnPoints;
+    private List<player> _players = new List<player>();
 
     private AudioManager audioManager;
 
@@ -27,26 +27,26 @@ public class PlayerManager : NetworkBehaviour
     {
         int count = _players.Count;
         var player = Instantiate(prefab, _spawnPoints[count].position, Quaternion.identity);
-		_players.Add(player);
-        
-        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);     
-		player.Died += OnPlayerDied;
+        _players.Add(player);
+        var info = LobbyUI.lobbyPlayers[count];
+        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
+        player.Died += OnPlayerDied;
         player.HitGiven += OnHitGiven;
-        player.animator.PickAnimator(count);
+        player.animator.PickAnimator(info.IsSpecialSkin ? 4 : count);
     }
 
-	void OnPlayerDied(player player)
-	{
-		_players.Remove(player);
-		
-		if (_players.Count == 1)
-			Invoke(nameof(EndRound), 2f);
-	}
+    void OnPlayerDied(player player)
+    {
+        _players.Remove(player);
 
-	void EndRound()
-	{
-		ServerGameNetPortal.Instance.EndRound();
-	}
+        if (_players.Count == 1)
+            Invoke(nameof(EndRound), 2f);
+    }
+
+    void EndRound()
+    {
+        ServerGameNetPortal.Instance.EndRound();
+    }
     void OnHitGiven()
     {
         int max = _players.Max(player => player.KillCount);

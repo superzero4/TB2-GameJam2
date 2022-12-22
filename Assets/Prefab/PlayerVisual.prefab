@@ -124,7 +124,8 @@ MonoBehaviour:
   - {fileID: 9100000, guid: aa2ab1bb0cc99004aa41298e6c95ccb9, type: 2}
   - {fileID: 22100000, guid: eadbf57e2a43da442ba12ada4994e84d, type: 2}
   - {fileID: 22100000, guid: 2bd661a1f06565949a56139299ea8e3c, type: 2}
-  - {fileID: 22100000, guid: 97c47de00f011cf41a4f71ea44340dca, type: 2}
+  - {fileID: 22100000, guid: e12166a97fd129a488c431602ef794ed, type: 2}
+  - {fileID: 22100000, guid: 539b0a9474150a64a934dba3850252a5, type: 2}
   _frameOnProgress:
     serializedVersion: 2
     m_Curve:
