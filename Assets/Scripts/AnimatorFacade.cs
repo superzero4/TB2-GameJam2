@@ -37,6 +37,7 @@ public class AnimatorFacade : MonoBehaviour
     }
     public void ShootToward(float x, float y)
     {
+        ReloadAnimation(false);
         SetOrientation(x, y, XShoot, YShoot);
         _animator.SetTrigger(Shoot);
     }
@@ -50,7 +51,6 @@ public class AnimatorFacade : MonoBehaviour
     /// <param name="progress">Send >=1 to stop animation</param>
     public void ReloadAnimation(float progress)
     {
-        ReloadAnimation(true);
         float value;
         //We cycle beetwen frame 3 and 4 while progressing
         //Debug.Log("Progress ; " + progress);
