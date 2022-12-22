@@ -197,9 +197,10 @@ public class player : NetworkBehaviour
     {
         Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
         boule newBoul = Instantiate(b, newBoulePos, Quaternion.identity);
-        newBoul.GetComponent<NetworkObject>().Spawn();
         newBoul.angle = angle;
-        newBoul.launcher = manager[playerId];
+        newBoul.launcherId2.Value = playerId;
+        Debug.Log("Lauchernew" + newBoul.launcherId);
+        newBoul.GetComponent<NetworkObject>().Spawn();
         animator.ShootToward(shootDirection.x, shootDirection.y);
         SnowballThrown?.Invoke();
     }
@@ -232,9 +233,10 @@ public class player : NetworkBehaviour
         }
         if (collision.TryGetComponent(out boule boule))
         {
-            if (boule.launcher != this)
+            if (boule.launcherId != OwnerClientId)
             {
-                Debug.Log("boum");
+                Debug.Log("Owner " + OwnerClientId);
+                Debug.Log("Laucnher " + boule.launcherId);
                 collide.Value = true;
             }
         }

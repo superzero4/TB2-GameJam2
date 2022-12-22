@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,8 +8,8 @@ public class PlayerManager : NetworkBehaviour
     [SerializeField] private GameObject prefab;
     [SerializeField] private List<Transform> _spawnPoints;
 
-    private List<player> _players = new List<player>();
-    public player this[ulong networkID] => _players.Find((p) => p.OwnerClientId == networkID);
+    private static List<player> _players = new List<player>();
+    public static player GetPlayer(ulong playerId) => _players.Find((p) => p.OwnerClientId == playerId);
 
     private AudioManager audioManager;
 

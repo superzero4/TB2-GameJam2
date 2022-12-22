@@ -764,7 +764,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 4129861db8fee1f4284c3f7f6217eba6, type: 3}
     volume: 0.06
     pitch: 1
-    loop: 1
+    loop: 0
     source: {fileID: 0}
   - Name: Game
     clip: {fileID: 8300000, guid: 3b517b8545f3eb44c836957c637a8e32, type: 3}
