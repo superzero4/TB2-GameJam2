@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -12,16 +11,10 @@ public class BannerUI : MonoBehaviour
 	[SerializeField] TextMeshProUGUI _nameText;
 	[SerializeField] TextMeshProUGUI _scoreText;
 	
-	public void SetData(PlayerData playerData)
+	public void SetData(LobbyPlayerState lobbyPlayerState)
 	{
-		_nameText.text = playerData.PlayerName;
-		//_scoreText.text = $"{playerData.KillCount}";
-	}
-	
-	public void SetData(string playerName)
-	{
-		_nameText.text = playerName;
-		//_scoreText.text = $"{playerData.KillCount}";
+		_nameText.text = lobbyPlayerState.PlayerName.Value;
+		_scoreText.text = $"{lobbyPlayerState.KillCount}";
 	}
 
 	public IEnumerator Show()

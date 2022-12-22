@@ -107,9 +107,10 @@ public class LobbyUI : NetworkBehaviour
             return;
         }
 
-        lobbyPlayers.Add(new LobbyPlayerState(
-            clientId,
-            playerData.Value.PlayerName,
+		lobbyPlayers.Add(new LobbyPlayerState(
+			clientId,
+			playerData.Value.PlayerName,
+			0,
             false
         ));
     }

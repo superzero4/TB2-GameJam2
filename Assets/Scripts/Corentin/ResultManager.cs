@@ -14,7 +14,7 @@ public class ResultManager : NetworkBehaviour
 	[SerializeField] List<Transform> _groundPoints;
 	[SerializeField] List<Transform> _bannerPoints;
 	
-	[SerializeField] player _playerPrefab;
+	[SerializeField] GameObject _playerPrefab;
 	
 	[SerializeField] List<BannerUI> _banners;
 	[SerializeField] Button _playAgainButton;
@@ -27,33 +27,26 @@ public class ResultManager : NetworkBehaviour
 	{
 		if (!IsServer)
 			yield break;
-		
-		for (int i = 0; i < NetworkManager.Singleton.ConnectedClients.Values.Count(); i++)
-		{
-			NetworkClient client = NetworkManager.Singleton.ConnectedClients.ElementAt(i).Value;
-			
-			PlayerData? playerData = ServerGameNetPortal.Instance.GetPlayerData(client.ClientId);
 
-			if (!playerData.HasValue)
-				continue;
-			
-			SpawnCharacterClientRPC(playerData.Value.PlayerName, NetworkManager.Singleton.ConnectedClients.Values.Count(), i, LobbyPlayerStatesContainer._playersData);
+		var orderedPlayers = LobbyPlayerStatesContainer._playersData.OrderByDescending(data => data.KillCount).ToList(); 
+		
+		for (int i = 0; i < LobbyPlayerStatesContainer._playersData.Length; i++)
+		{
+			SpawnCharacterClientRPC(orderedPlayers[i], LobbyPlayerStatesContainer._playersData.Length, i);
 
 			yield return _waitForSeconds;
 		}
 	}
 
 	[ClientRpc]
-	void SpawnCharacterClientRPC(string playerName, int playerCount, int i, LobbyPlayerState[] _playersData)
+	void SpawnCharacterClientRPC(LobbyPlayerState lobbyPlayerState, int playerCount, int index)
 	{
-		var index = i;
-
 		var player = Instantiate(_playerPrefab, _spawnPoint.position, Quaternion.identity);
-		AnimatorFacade animatorFacade = player.animator;
-		animatorFacade.PickAnimator(_playersData[i].SkinIndex);
-	   _banners[index].SetData(playerName);
+		AnimatorFacade animatorFacade = player.GetComponent<AnimatorFacade>();
+		animatorFacade.PickAnimator(lobbyPlayerState.SkinIndex);
+	    _banners[index].SetData(lobbyPlayerState);
 		animatorFacade.SetOrientation(1, 0);		
-		StartCoroutine(Move(player.transform, _groundPoints[i].position,
+		StartCoroutine(Move(player.transform, _groundPoints[index].position,
 			() =>
 			{
 				StartCoroutine(Move(player.transform, _bannerPoints[index].position, () =>

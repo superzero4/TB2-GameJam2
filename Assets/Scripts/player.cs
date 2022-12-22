@@ -389,8 +389,17 @@ public class player : NetworkBehaviour
 	{
 		if (!IsOwner)
 			return;
-		
+
+		UpdateLobbyStateKillCountServerRpc((int) OwnerClientId);
 		killCount.Value++;
+	}
+
+	[ServerRpc]
+	public void UpdateLobbyStateKillCountServerRpc(int id)
+	{
+		LobbyPlayerState lobbyPlayerState = LobbyPlayerStatesContainer._playersData[id];
+		lobbyPlayerState.KillCount++;
+		LobbyPlayerStatesContainer._playersData[id] = lobbyPlayerState;
 	}
 
 	[ServerRpc]
