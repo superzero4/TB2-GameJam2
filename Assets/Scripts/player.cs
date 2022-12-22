@@ -223,10 +223,10 @@ public class player : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
 	public void ShootServerRpc(Vector2 shootDirection, float angle, ulong playerId)
     {
-        Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
+        Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle),
+            _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
         boule newBoul = Instantiate(b, newBoulePos, Quaternion.identity);
-        newBoul.angle = angle;
-        newBoul.launcherId2.Value = playerId;
+        newBoul.Init(angle, playerId);
         Debug.Log("Lauchernew" + newBoul.launcherId);
         newBoul.GetComponent<NetworkObject>().Spawn();
         animator.ShootToward(shootDirection.x, shootDirection.y);
