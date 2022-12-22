@@ -192,7 +192,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1674675022, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
       propertyPath: charThumbnails.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1674675022, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
       propertyPath: charThumbnails.Array.data[0]
@@ -210,6 +210,10 @@ PrefabInstance:
       propertyPath: charThumbnails.Array.data[3]
       value: 
       objectReference: {fileID: 1239141332, guid: d561670c7289c664b90d0aaef603c195, type: 3}
+    - target: {fileID: 1674675022, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
+      propertyPath: charThumbnails.Array.data[4]
+      value: 
+      objectReference: {fileID: 42036215, guid: e89258e07636ac647bc27336909424b1, type: 3}
     - target: {fileID: 2587486420334744047, guid: f04855a6b3fae4f478846139aa5cf621, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
