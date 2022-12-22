@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -80,19 +81,22 @@ public class player : NetworkBehaviour
     public bool canMove = true;
 
     //Actions
-    public Action HitTaken { get; set; }
-    public Action HitGiven { get; set; }
-    public Action RefillSnowball { get; set; }
-    public Action SnowballThrown { get; set; }
-    public Action<player> Died { get; set; }
-    public int KillCount { get; set; }
-    public static Action MaxKillCountChanged { get; set; }
-    [SerializeField] private int initialHealth = 3;
+	public Action HitTaken { get; set; }
+	public Action HitGiven { get; set; }
+	public Action RefillSnowball { get; set; }
+	public Action SnowballThrown { get; set; }
+	public static Action MaxKillCountChanged { get; set; }
 
-    public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Owner);
+	public Action<player> Died { get; set; }
 
-    [SerializeField] private float timeToDied = 1f;
+	public NetworkVariable<bool> hasCrowns = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	public NetworkVariable<FixedString64Bytes> name = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	public NetworkVariable<SnowballStatus> snowballStatus = new NetworkVariable<SnowballStatus>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	public NetworkVariable<int> killCount = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+	public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+	[SerializeField] private int initialHealth = 3;
+	[SerializeField] private float timeToDied = 1f;
 
     public override void OnNetworkSpawn()
     {
@@ -160,8 +164,10 @@ public class player : NetworkBehaviour
 
             //Reload
             if (inputVector != Vector2.zero)
-            {
-                canReload = false;
+			{
+				if (snowballStatus.Value == SnowballStatus.Reloading && IsOwner)
+					snowballStatus.Value = SnowballStatus.NotReady;
+				canReload = false;
                 reload = false;
                 timerReload = timerReloadMax;
                 animator.ReloadAnimation(false);
@@ -178,6 +184,8 @@ public class player : NetworkBehaviour
                 if (timerReload <= 0)
                 {
                     canShoot = true;
+					if (IsOwner)
+						snowballStatus.Value = SnowballStatus.Ready;
                     timerReload = timerReloadMax;
                     reload = false;
                     animator.ReloadAnimation(false);
@@ -276,11 +284,13 @@ public class player : NetworkBehaviour
     }
 
     public void Reload()
-    {
-        RefillSnowball?.Invoke();
+	{
+		if (IsOwner)
+			snowballStatus.Value = SnowballStatus.Reloading;
+		
         reload = true;
     }
-
+	
     [ContextMenu("Shoot")]
     [ServerRpc(RequireOwnership = false)]
     public void ShootServerRpc(Vector2 shootDirection, float angle, ulong playerId)
@@ -292,8 +302,17 @@ public class player : NetworkBehaviour
         Debug.Log("Lauchernew" + newBoul.launcherId);
         newBoul.GetComponent<NetworkObject>().Spawn();
         animator.ShootToward(shootDirection.x, shootDirection.y);
-        SnowballThrown?.Invoke();
+        ShootClientRpc();
     }
+
+	[ClientRpc]
+	public void ShootClientRpc()
+	{
+		if (!IsOwner)
+			return;
+		
+		snowballStatus.Value = SnowballStatus.NotReady;
+	}
 
     public Vector2 GetMousePosition()
     {
@@ -311,9 +330,8 @@ public class player : NetworkBehaviour
         }
     }
 
-    [ContextMenu("TakeDamage")]
-    public void TakeDamage(ulong clientId)
-    {
+	public void TakeDamage(ulong clientId)
+	{
         TakeDamageClientRpc(clientId);
     }
 
@@ -326,9 +344,7 @@ public class player : NetworkBehaviour
         clientIdTouched = clientId;
         health.Value--;
 
-        //HitTaken?.Invoke();
-
-        switch (health.Value)
+		switch (health.Value)
         {
             case 0:
                 if (IsHost)
@@ -364,15 +380,43 @@ public class player : NetworkBehaviour
         Died?.Invoke(this);
     }
 
-    [ContextMenu("InflictDamage")]
-    public void InflictDamage()
-    {
-        //TODO use Network Manager
-        /*KillCount++;
+	[ClientRpc]
+	public void InflictDamageClientRpc()
+	{
+		if (!IsOwner)
+			return;
 		
-		if (KillCount > maxKillCount)
-			MaxKillCountChanged?.Invoke();
+		killCount.Value++;
+	}
+
+	[ServerRpc]
+	public void SetNameServerRpc(ulong playerOwnerClientId)
+	{
+		SetNameClientRpc(ServerGameNetPortal.Instance.GetPlayerData(playerOwnerClientId)?.PlayerName);
+	}
+	
+	[ClientRpc]
+	void SetNameClientRpc(FixedString64Bytes _name)
+	{
+		if (!IsOwner)
+			return;
 		
-		HitGiven?.Invoke();*/
-    }
+		name.Value = _name;
+	}
+
+	[ClientRpc]
+	public void SetCrownsClientRpc(bool newValue)
+	{
+		if (!IsOwner)
+			return;
+
+		hasCrowns.Value = newValue;
+	}
+}
+
+public enum SnowballStatus
+{
+	NotReady,
+	Reloading,
+	Ready
 }
