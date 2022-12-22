@@ -9,6 +9,8 @@ public struct LobbyPlayerState : INetworkSerializable, IEquatable<LobbyPlayerSta
     public bool IsReady;
     public bool IsSpecialSkin;
 
+    public int SkinIndex => IsSpecialSkin ? 4 : (int)ClientId;
+
     public LobbyPlayerState(ulong clientId, FixedString32Bytes playerName, bool isReady)
     {
         ClientId = clientId;
@@ -22,6 +24,7 @@ public struct LobbyPlayerState : INetworkSerializable, IEquatable<LobbyPlayerSta
         serializer.SerializeValue(ref ClientId);
         serializer.SerializeValue(ref PlayerName);
         serializer.SerializeValue(ref IsReady);
+        serializer.SerializeValue(ref IsSpecialSkin);
     }
 
     public bool Equals(LobbyPlayerState other)

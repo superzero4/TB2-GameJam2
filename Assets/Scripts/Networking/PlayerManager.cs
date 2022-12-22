@@ -15,7 +15,9 @@ public class PlayerManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        SpawnPlayerServerRpc(NetworkManager.Singleton.LocalClientId);
+        ulong localClientId = NetworkManager.Singleton.LocalClientId;
+        Debug.Log("Sending : " + LobbyPlayerStatesContainer._playersData[(int)localClientId].SkinIndex);
+        SpawnPlayerServerRpc(localClientId, LobbyPlayerStatesContainer._playersData[(int)localClientId].SkinIndex);
 
         audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         audioManager.Stop("Musique");
@@ -23,16 +25,18 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SpawnPlayerServerRpc(ulong clientID)
+    private void SpawnPlayerServerRpc(ulong clientID,int skinIndex)
     {
-        int count = _players.Count;
-        var player = Instantiate(prefab, _spawnPoints[count].position, Quaternion.identity);
+        int count = (int)clientID;
+        Debug.Log("For server, skin index is " +
+        LobbyPlayerStatesContainer._playersData[count].SkinIndex);
+        player player = Instantiate(prefab, _spawnPoints[count].position, Quaternion.identity);
         _players.Add(player);
-        var info = LobbyUI.lobbyPlayers[count];
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
         player.Died += OnPlayerDied;
         player.HitGiven += OnHitGiven;
-        player.animator.PickAnimator(info.IsSpecialSkin ? 4 : count);
+        player.SkinSelectionClientRpc(clientID, LobbyPlayerStatesContainer._playersData);
+        Debug.Log("Setting : " + skinIndex);
     }
 
     void OnPlayerDied(player player)

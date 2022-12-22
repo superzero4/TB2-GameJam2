@@ -13,13 +13,14 @@ public class LobbyPlayerCard : MonoBehaviour
     [SerializeField] private Image selectedCharacterImage;
     [SerializeField] private Toggle isReadyToggle;
 
-    public void UpdateDisplay(LobbyPlayerState lobbyPlayerState)
+    public void UpdateDisplay(LobbyPlayerState lobbyPlayerState,Sprite image)
     {
         playerDisplayNameText.text = lobbyPlayerState.PlayerName.ToString();
         isReadyToggle.isOn = lobbyPlayerState.IsReady;
 
         waitingForPlayerPanel.SetActive(false);
         playerDataPanel.SetActive(true);
+        UpdateImage(image);
     }
 
     public void DisableDisplay()

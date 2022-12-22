@@ -50,8 +50,14 @@ public class player : NetworkBehaviour
     
     [SerializeField] private int initialHealth = 3;
     private NetworkVariable<int> _health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    [ClientRpc]
+    internal void SkinSelectionClientRpc(ulong clientID, LobbyPlayerState[] playersData)
+    {
+        if (OwnerClientId != clientID) return;
+        animator.PickAnimator(playersData[clientID].SkinIndex);
+    }
 
-	public Action HitTaken { get; set; } 
+    public Action HitTaken { get; set; } 
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }
@@ -95,6 +101,8 @@ public class player : NetworkBehaviour
         TimerCollision = TimerCollisionMax;
 
         camera = Camera.main;
+        animator.PickAnimator(LobbyPlayerStatesContainer._playersData[(int)OwnerClientId].SkinIndex);
+
     }
 
     private void Update()
