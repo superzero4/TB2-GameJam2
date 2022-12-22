@@ -57,6 +57,11 @@ public class PlayerManager : NetworkBehaviour
     {
         ServerGameNetPortal.Instance.EndRound();
     }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Y))
+            EndRound();
+    }
     void OnHitGiven()
     {
         int max = _players.Max(player => player.KillCount);
