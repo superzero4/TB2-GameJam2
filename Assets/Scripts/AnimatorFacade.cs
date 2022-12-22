@@ -18,6 +18,8 @@ public class AnimatorFacade : MonoBehaviour
     private const string ReloadBool = "Reload";
     private const float FirstFrameOfLoop = 2f;
     private float EaseInOut = .2f;
+    public RuntimeAnimatorController this[int i] => _controllers[i];
+
 
     private void Start()
     {

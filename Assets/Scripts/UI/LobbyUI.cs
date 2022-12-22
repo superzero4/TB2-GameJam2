@@ -7,7 +7,7 @@ public class LobbyUI : NetworkBehaviour
 {
     [Header("References")] [SerializeField]
     private LobbyPlayerCard[] lobbyPlayerCards;
-
+    [SerializeField] private Sprite[] charThumbnails;
     [SerializeField] private Button startGameButton;
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private TextMeshProUGUI text;
@@ -158,6 +158,7 @@ public class LobbyUI : NetworkBehaviour
             if (lobbyPlayers.Count > i)
             {
                 lobbyPlayerCards[i].UpdateDisplay(lobbyPlayers[i]);
+                lobbyPlayerCards[i].UpdateImage(charThumbnails[i]);
             }
             else
             {

@@ -9,8 +9,6 @@ public class PlayerManager : NetworkBehaviour
 	[SerializeField] private List<Transform> _spawnPoints;	
 	private List<player> _players = new List<player>();
 
-    private List<player> _players = new List<player>();
-
     private AudioManager audioManager;
 
     public player TopPlayer => _players.Aggregate((p1, p2) => p1.KillCount > p2.KillCount ? p1 : p2);
@@ -27,11 +25,14 @@ public class PlayerManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SpawnPlayerServerRpc(ulong clientID)
     {
-        var player = Instantiate(prefab, _spawnPoints[_players.Count].position, Quaternion.identity);
+        int count = _players.Count;
+        var player = Instantiate(prefab, _spawnPoints[count].position, Quaternion.identity);
 		_players.Add(player);
+        
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);     
 		player.Died += OnPlayerDied;
         player.HitGiven += OnHitGiven;
+        player.animator.PickAnimator(count);
     }
 
 	void OnPlayerDied(player player)

@@ -27,4 +27,8 @@ public class LobbyPlayerCard : MonoBehaviour
         waitingForPlayerPanel.SetActive(true);
         playerDataPanel.SetActive(false);
     }
+    public void UpdateImage(Sprite sprite)
+    {
+        selectedCharacterImage.sprite = sprite;
+    }
 }
