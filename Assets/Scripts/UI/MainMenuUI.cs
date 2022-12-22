@@ -43,6 +43,11 @@ public class MainMenuUI : MonoBehaviour
         CreateRelay();
     }
 
+    public void OnQuitClicked()
+    {
+        Application.Quit();
+    }
+
     public void OnClientClicked()
     {
         PlayerPrefs.SetString("PlayerName", displayNameInputField.text);

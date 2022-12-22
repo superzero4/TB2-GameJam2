@@ -14,7 +14,7 @@ public class ResultManager : NetworkBehaviour
 	[SerializeField] List<Transform> _groundPoints;
 	[SerializeField] List<Transform> _bannerPoints;
 	
-	[SerializeField] GameObject _playerPrefab;
+	[SerializeField] player _playerPrefab;
 	
 	[SerializeField] List<BannerUI> _banners;
 	[SerializeField] Button _playAgainButton;
@@ -37,23 +37,22 @@ public class ResultManager : NetworkBehaviour
 			if (!playerData.HasValue)
 				continue;
 			
-			SpawnCharacterClientRPC(playerData.Value.PlayerName, NetworkManager.Singleton.ConnectedClients.Values.Count(), i);
+			SpawnCharacterClientRPC(playerData.Value.PlayerName, NetworkManager.Singleton.ConnectedClients.Values.Count(), i, LobbyPlayerStatesContainer._playersData);
 
 			yield return _waitForSeconds;
 		}
 	}
 
 	[ClientRpc]
-	void SpawnCharacterClientRPC(string playerName, int playerCount, int i)
+	void SpawnCharacterClientRPC(string playerName, int playerCount, int i, LobbyPlayerState[] _playersData)
 	{
 		var index = i;
 
-		GameObject player = Instantiate(_playerPrefab, _spawnPoint.position, Quaternion.identity);
-		AnimatorFacade animatorFacade = player.GetComponent<AnimatorFacade>();
-
-		_banners[index].SetData(playerName);
-		animatorFacade.SetOrientation(1, 0);
-
+		var player = Instantiate(_playerPrefab, _spawnPoint.position, Quaternion.identity);
+		AnimatorFacade animatorFacade = player.animator;
+		animatorFacade.PickAnimator(_playersData[i].SkinIndex);
+	   _banners[index].SetData(playerName);
+		animatorFacade.SetOrientation(1, 0);		
 		StartCoroutine(Move(player.transform, _groundPoints[i].position,
 			() =>
 			{

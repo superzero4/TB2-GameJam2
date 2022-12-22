@@ -2,17 +2,20 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+using System.Collections.Generic;
 
 public class LobbyUI : NetworkBehaviour
 {
-    [Header("References")] [SerializeField]
+    [Header("References")]
+    [SerializeField]
     private LobbyPlayerCard[] lobbyPlayerCards;
-
+    [SerializeField] private Sprite[] charThumbnails;
     [SerializeField] private Button startGameButton;
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private int minPlayer;
-
+    LobbyPlayerStatesContainer _container;
     private NetworkList<LobbyPlayerState> lobbyPlayers;
 
     private void Awake()
@@ -44,9 +47,30 @@ public class LobbyUI : NetworkBehaviour
         inputField.text = PlayerPrefs.GetString("Code");
         text.text = NetworkManager.Singleton.LocalClientId.ToString();
     }
-
+    public void OnKonamiCode()
+    {
+        Debug.Log("Sending RPC with " + NetworkManager.Singleton.LocalClientId);
+        SpecialSkinServerRPC(NetworkManager.Singleton.LocalClientId);
+    }
+    [ServerRpc(RequireOwnership = false)]
+    public void SpecialSkinServerRPC(ulong clientID)
+    {
+        Debug.Log("Reiceved RPC with " + clientID);
+        var p = lobbyPlayers[(int)clientID];
+        p.IsSpecialSkin = true;
+        lobbyPlayers[(int)clientID] = p;
+        //Will call on list changed and update image
+        //lobbyPlayerCards[p.ClientId].UpdateImage(charThumbnails[4]);
+    }
     public override void OnDestroy()
     {
+        LobbyPlayerStatesContainer._playersData = new LobbyPlayerState[lobbyPlayers.Count];
+        int i = 0;
+        foreach (var p in lobbyPlayers)
+        {
+            LobbyPlayerStatesContainer._playersData[i] = p;
+            i++;
+        }
         base.OnDestroy();
 
         lobbyPlayers.OnListChanged -= HandleLobbyPlayersStateChanged;
@@ -111,11 +135,9 @@ public class LobbyUI : NetworkBehaviour
         {
             if (lobbyPlayers[i].ClientId == serverRpcParams.Receive.SenderClientId)
             {
-                lobbyPlayers[i] = new LobbyPlayerState(
-                    lobbyPlayers[i].ClientId,
-                    lobbyPlayers[i].PlayerName,
-                    !lobbyPlayers[i].IsReady
-                );
+                var player = lobbyPlayers[i];
+                player.IsReady = !player.IsReady;
+                lobbyPlayers[i] = player;
             }
         }
     }
@@ -153,11 +175,13 @@ public class LobbyUI : NetworkBehaviour
 
     private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
     {
+        Debug.Log("Occured on " + NetworkManager.Singleton.LocalClientId);
         for (int i = 0; i < lobbyPlayerCards.Length; i++)
         {
             if (lobbyPlayers.Count > i)
             {
-                lobbyPlayerCards[i].UpdateDisplay(lobbyPlayers[i]);
+                LobbyPlayerState lobbyPlayerState = lobbyPlayers[i];
+                lobbyPlayerCards[i].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
             }
             else
             {

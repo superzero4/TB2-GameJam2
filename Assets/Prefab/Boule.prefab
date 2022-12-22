@@ -53,7 +53,8 @@ MonoBehaviour:
   angle: 0
   shootSpeed: 7
   _rb: {fileID: 7821137091161343562}
-  launcher: {fileID: 0}
+  launcherId2:
+    m_InternalValue: 25
   _ps: {fileID: 3580994372953198240}
   _collider: {fileID: 3889057750316067155}
   _renderer: {fileID: 8218033245722262154}
@@ -90,7 +91,7 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
