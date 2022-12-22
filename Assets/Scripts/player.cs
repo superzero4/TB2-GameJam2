@@ -59,7 +59,7 @@ public class player : NetworkBehaviour
     public bool canMove = true;
 
     //Actions
-    public Action HitTaken { get; set; } 
+    public Action<ulong> HitTaken { get; set; } 
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }

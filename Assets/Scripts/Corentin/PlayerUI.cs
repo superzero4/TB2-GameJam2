@@ -52,7 +52,7 @@ public class PlayerUI : MonoBehaviour
 		_player.RefillSnowball -= OnRefillSnowball;
 	}
 
-	void OnHitTaken()
+	void OnHitTaken(ulong x)
 	{
 		if (_activeHearts.TryPop(out Image heart))
 			heart.color = Color.gray;

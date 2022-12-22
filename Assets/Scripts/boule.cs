@@ -59,6 +59,7 @@ public class boule : NetworkBehaviour
             if(player.collide.Value == false)
             {
                 launcher.HitGiven?.Invoke();
+                player.HitTaken?.Invoke(launcher.OwnerClientId);
                 player.TakeDamage(player.OwnerClientId);
                 launcher.InflictDamage();
                 audioManager.Play("Aie");
