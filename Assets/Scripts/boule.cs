@@ -36,8 +36,8 @@ public class boule : NetworkBehaviour
         Vector2 force = new Vector2(shootSpeed * Mathf.Cos(angle), shootSpeed * Mathf.Sin(angle));
         _rb.AddForce(force , ForceMode2D.Impulse);
 
-        //Position d�part
-        transform.right = -force;
+        //Rotation de départ
+        setRotationClientRpc(force);
 
         //Particles
         _ps.Play();
@@ -45,6 +45,13 @@ public class boule : NetworkBehaviour
         //Audio
         audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
     }
+
+    [ClientRpc]
+    private void setRotationClientRpc(Vector2 force)
+    {
+        transform.right = -force;
+    }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -66,7 +73,6 @@ public class boule : NetworkBehaviour
         }
 
         //Particles
-        
         _rb.velocity = Vector2.zero;
         Debug.Log("flex" + _renderer.enabled);
         DestroyServerRpc();
