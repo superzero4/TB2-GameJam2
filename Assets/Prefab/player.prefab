@@ -71,6 +71,7 @@ MonoBehaviour:
     m_InternalValue: 0
   TimerCollisionMax: 3
   canMove: 1
+  buttonPanel: {fileID: 5234101068546212206}
   initialHealth: 3
   health:
     m_InternalValue: 0
@@ -354,7 +355,7 @@ GameObject:
   - component: {fileID: 2547371397980200238}
   - component: {fileID: 7345901158121288719}
   - component: {fileID: 3421775977719996211}
-  - component: {fileID: 8549976514490140337}
+  - component: {fileID: 3795844430897531942}
   m_Layer: 5
   m_Name: ButtonPanel
   m_TagString: Untagged
@@ -422,7 +423,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8549976514490140337
+--- !u!114 &3795844430897531942
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -434,6 +435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 587b9c71732582b4d97cd5969503a0ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonPanel: {fileID: 5234101068546212206}
 --- !u!1 &6040538255305113890
 GameObject:
   m_ObjectHideFlags: 0
@@ -556,9 +558,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MainMenuUI, Assembly-CSharp
-        m_MethodName: OnClientClicked
+      - m_Target: {fileID: 3795844430897531942}
+        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
+        m_MethodName: Resume
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -859,9 +861,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: MainMenuUI, Assembly-CSharp
-        m_MethodName: OnClientClicked
+      - m_Target: {fileID: 3795844430897531942}
+        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
+        m_MethodName: Quit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
