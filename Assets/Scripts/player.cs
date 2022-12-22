@@ -14,6 +14,7 @@ public class player : NetworkBehaviour
     [SerializeField] private Rigidbody2D _rb;
     [SerializeField] private CapsuleCollider2D _cc;
     [SerializeField] private SpriteRenderer _sr;
+    public PlayerManager manager;
 
     //Move
     public InputActionAsset controls;
@@ -183,23 +184,24 @@ public class player : NetworkBehaviour
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
 
-	[ContextMenu("Shoot")]
-    [ServerRpc(RequireOwnership = false)]
-	public void ShootServerRpc(Vector2 shootDirection, float angle, ulong playerId)
-    {
-        Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
-        boule newBoul = Instantiate(b , newBoulePos , Quaternion.identity);
-        newBoul.GetComponent<NetworkObject>().Spawn();
-        newBoul.angle = angle;
-        newBoul.launcher = this;
-        animator.ShootToward(shootDirection.x, shootDirection.y);
-        SnowballThrown?.Invoke();
-    }
+	
 
     public void Reload()
     {
         RefillSnowball?.Invoke();
         reload = true;
+    }
+    [ContextMenu("Shoot")]
+    [ServerRpc(RequireOwnership = false)]
+	public void ShootServerRpc(Vector2 shootDirection, float angle, ulong playerId)
+    {
+        Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
+        boule newBoul = Instantiate(b, newBoulePos, Quaternion.identity);
+        newBoul.GetComponent<NetworkObject>().Spawn();
+        newBoul.angle = angle;
+        newBoul.launcher = manager[playerId];
+        animator.ShootToward(shootDirection.x, shootDirection.y);
+        SnowballThrown?.Invoke();
     }
 
     public Vector2 GetMousePosition()
