@@ -6248,6 +6248,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2048996773}
   - component: {fileID: 2048996774}
+  - component: {fileID: 2048996775}
   m_Layer: 0
   m_Name: ResultManager
   m_TagString: Untagged
@@ -6303,6 +6304,22 @@ MonoBehaviour:
   _playAgainButton: {fileID: 1363251527}
   _quitButton: {fileID: 192850243}
   _buttonsCanvasGroup: {fileID: 1782534792}
+--- !u!114 &2048996775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048996772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1485300142
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1001 &2088983133
 PrefabInstance:
   m_ObjectHideFlags: 0
