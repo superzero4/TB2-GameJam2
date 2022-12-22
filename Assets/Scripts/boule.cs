@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ public class boule : NetworkBehaviour
     [SerializeField]
     private Renderer _renderer;
     private AudioManager audioManager;
+    private float timeToDestroy = 2f;
 
     void Start()
     {
@@ -56,19 +58,32 @@ public class boule : NetworkBehaviour
         }
 
         //Particles
-        _ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        _ps.Play();
-        _renderer.enabled = false;
-        _collider.enabled = false;
+        
         _rb.velocity = Vector2.zero;
+        Debug.Log("flex" + _renderer.enabled);
         DestroyServerRpc();
     }
 
     [ServerRpc]
     private void DestroyServerRpc()
     {
-        GetComponent<NetworkObject>().Despawn();
-        Destroy(gameObject, 2);
+        HideClientRpc();
+        StartCoroutine(DestroyCoroutine());
         audioManager.Play("Boule");
+    }
+
+    [ClientRpc]
+    private void HideClientRpc()
+    {
+        _ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        _ps.Play();
+        _renderer.enabled = false;
+        _collider.enabled = false;
+    }
+
+    private IEnumerator DestroyCoroutine()
+    {
+        yield return new WaitForSeconds(timeToDestroy);
+        GetComponent<NetworkObject>().Despawn();
     }
 }

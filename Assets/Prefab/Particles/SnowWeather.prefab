@@ -17,7 +17,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1975253281, guid: e9af06bc54a72ea4e8548977bd726e6b, type: 3}
       propertyPath: fogIntensity
-      value: 0.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1975253281, guid: e9af06bc54a72ea4e8548977bd726e6b, type: 3}
       propertyPath: snowIntensity
@@ -89,7 +89,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6708431365547915879, guid: e9af06bc54a72ea4e8548977bd726e6b, type: 3}
       propertyPath: m_Name
-      value: Snow
+      value: SnowWeather
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9af06bc54a72ea4e8548977bd726e6b, type: 3}
