@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class KonamiCode : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class KonamiCode : MonoBehaviour
     private float timerKonami;
     private int indexKonami;
     private KeyCode[] keysKonami;
+    public UnityEvent KonamiCodeEvent = new UnityEvent();
 
     void Start()
     {
@@ -49,6 +51,7 @@ public class KonamiCode : MonoBehaviour
         if (indexKonami == keysKonami.Length)
         {
             indexKonami = 0;
+            KonamiCodeEvent?.Invoke();
             Debug.Log("KONAMI");
         }
         if (indexKonami > 0)

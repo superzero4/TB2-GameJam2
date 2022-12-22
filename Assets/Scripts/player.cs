@@ -45,14 +45,21 @@ public class player : NetworkBehaviour
     [SerializeField] private float TimerCollisionMax;
     private float TimerCollision;
 
-    public bool canMove = true;
-
     //PauseMenu
     [SerializeField]
     private GameObject buttonPanel;
     
+    //Others
+    [ClientRpc]
+    internal void SkinSelectionClientRpc(ulong clientID, LobbyPlayerState[] playersData)
+    {
+        if (OwnerClientId != clientID) return;
+        animator.PickAnimator(playersData[clientID].SkinIndex);
+    }
+    public bool canMove = true;
+
     //Actions
-	public Action HitTaken { get; set; } 
+    public Action HitTaken { get; set; } 
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }
@@ -96,8 +103,8 @@ public class player : NetworkBehaviour
             Pause();
         };
 
-            //Reload
-            canShoot = false;
+        //Reload
+        canShoot = false;
         reload = false;
         timerReload = timerReloadMax;
 
@@ -105,10 +112,10 @@ public class player : NetworkBehaviour
         TimerClignote = TimerClignoteMax;
         playerColor = false;
         collide.Value = false;
-
         TimerCollision = TimerCollisionMax;
 
         camera = Camera.main;
+        animator.PickAnimator(LobbyPlayerStatesContainer._playersData[(int)OwnerClientId].SkinIndex);
     }
 
     private void Update()
