@@ -36,6 +36,8 @@ public class PlayerManager : NetworkBehaviour
 	void OnPlayerDied(player player)
 	{
 		_players.Remove(player);
+		player.GetComponent<NetworkObject>().Despawn(false);
+		Destroy(player.gameObject);
 		
 		if (_players.Count == 1)
 			Invoke(nameof(EndRound), 2f);

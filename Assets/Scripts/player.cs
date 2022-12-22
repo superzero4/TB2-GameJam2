@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -49,8 +50,10 @@ public class player : NetworkBehaviour
 	public int KillCount { get; set; }
     
     [SerializeField] private int initialHealth = 3;
-    private NetworkVariable<int> _health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
+    [SerializeField] private float timeToDied = 1f;
+    
 	public Action HitTaken { get; set; } 
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
@@ -67,7 +70,7 @@ public class player : NetworkBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _cc = GetComponent<CapsuleCollider2D>();
 
-        _health.Value = initialHealth;
+        health.Value = initialHealth;
         
         //Shoot
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
@@ -221,23 +224,7 @@ public class player : NetworkBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!IsOwner) return;
-        
-        if(_health.Value == 0)
-        {
-            animator.Kill();
-			Died?.Invoke(this);
-            Destroy(gameObject , 1);
-        }
-        if(_health.Value > 0 && collide.Value == false)
-        {
-            collide.Value = true;
-        }
-    }
-
-	[ContextMenu("TakeDamage")]
+    [ContextMenu("TakeDamage")]
 	public void TakeDamage(ulong clientId)
 	{
         TakeDamageClientRpc(clientId);
@@ -247,11 +234,48 @@ public class player : NetworkBehaviour
     private void TakeDamageClientRpc(ulong clientId)
     {
         if (clientId != NetworkManager.Singleton.LocalClientId) return;
-        _health.Value--;
-        HitTaken?.Invoke();
+        health.Value--;
+        health.OnValueChanged.Invoke(health.Value + 1, health.Value);
+        
+        //HitTaken?.Invoke();
+
+        switch (health.Value)
+        {
+            case 0:
+                if (IsHost)
+                    PlayerDiedServerRpc();
+                else
+                    PlayerDied();
+                break;
+            case > 0 when collide.Value == false:
+                collide.Value = true;
+                break;
+        }
+    }
+    
+    private void PlayerDied()
+    {
+        animator.Kill();
+        PlayerDiedServerRpc();
     }
 
-	[ContextMenu("InflictDamage")]
+    [ServerRpc(RequireOwnership = false)]
+    private void PlayerDiedServerRpc()
+    {
+        if (IsHost)
+            animator.Kill();
+
+        StartCoroutine(DiedCoroutine());
+        //Destroy(gameObject , timeToDied);
+    }
+
+    private IEnumerator DiedCoroutine()
+    {
+        yield return new WaitForSeconds(timeToDied);
+        Died?.Invoke(this);
+    }
+
+    [ContextMenu("InflictDamage")]
 	public void InflictDamage()
 	{		
         //TODO use Network Manager
