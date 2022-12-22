@@ -13,7 +13,7 @@ public class PlayerManager : NetworkBehaviour
 
     private AudioManager audioManager;
 
-    public player TopPlayer => _players.Aggregate((p1, p2) => p1.KillCount > p2.KillCount ? p1 : p2);
+    public player TopPlayer => _players.Aggregate((p1, p2) => p1.killCount.Value > p2.killCount.Value ? p1 : p2);
 
     public override void OnNetworkSpawn()
     {
@@ -36,7 +36,7 @@ public class PlayerManager : NetworkBehaviour
         player.manager = this;
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
         player.Died += OnPlayerDied;
-        player.HitGiven += OnHitGiven;
+        player.killCount.OnValueChanged += OnKillCountValueChanged;
         player.SkinSelectionClientRpc(clientID, LobbyPlayerStatesContainer._playersData);
     }
 
@@ -62,16 +62,14 @@ public class PlayerManager : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Y))
             EndRound();
     }
-    void OnHitGiven()
+	
+    void OnKillCountValueChanged(int previousValue, int newValue)
     {
-        int max = _players.Max(player => player.KillCount);
+        int max = _players.Max(player => player.killCount.Value);
+		
         foreach (var p in _players)
-        {
-            if (p.KillCount == max)
-                p.GetComponentInChildren<PlayerUI>().SetCrowns();
-            else
-                p.GetComponentInChildren<PlayerUI>().UnsetCrowns();
-
-        }
+		{
+			p.SetCrownsClientRpc(p.killCount.Value == max);
+		}
     }
 }
