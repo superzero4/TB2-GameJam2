@@ -35,16 +35,20 @@ public class PlayerManager : NetworkBehaviour
         player.Died += OnPlayerDied;
     }
     
-    void OnPlayerDied(player player)
-    {
-        _players.Remove(player);
+    
 
-        if (_players.Count == 1)
-            Invoke(nameof(EndRound), 2f);
-    }
+	void OnPlayerDied(player player)
+	{
+		_players.Remove(player);
+		player.GetComponent<NetworkObject>().Despawn(false);
+		Destroy(player.gameObject);
+		
+		if (_players.Count == 1)
+			Invoke(nameof(EndRound), 2f);
+	}
 
-    void EndRound()
-    {
-        ServerGameNetPortal.Instance.EndRound();
-    }
+	void EndRound()
+	{
+		ServerGameNetPortal.Instance.EndRound();
+	}
 }
