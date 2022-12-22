@@ -5,31 +5,28 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class player : NetworkBehaviour
 {
     //Body
-    [SerializeField]
-    private Rigidbody2D _rb;
-    [SerializeField]
-    private CapsuleCollider2D _cc;
-    [SerializeField]
-    private SpriteRenderer _sr;
+    [SerializeField] private Rigidbody2D _rb;
+    [SerializeField] private CapsuleCollider2D _cc;
+    [SerializeField] private SpriteRenderer _sr;
 
     //Move
     public InputActionAsset controls;
-    [SerializeField]
-    private float speed = 2;
+    [SerializeField] private float speed = 2;
     private Vector2 newPos;
 
     //Shoot
     public float angle;
-    [SerializeField]
-    private boule b;
+    [SerializeField] private boule b;
     private Vector2 aimDirection;
     private Vector2 mousePosition;
     private new Camera camera;
+    
     //Reload
     private bool canShoot;
     private bool reload;
@@ -39,19 +36,20 @@ public class player : NetworkBehaviour
 
     //Animation
     public AnimatorFacade animator;
-    [SerializeField]
-    private float TimerClignoteMax;
+    [SerializeField] private float TimerClignoteMax;
     private float TimerClignote;
     private bool playerColor;
-    public bool Collide;
-    [SerializeField]
-    private float TimerCollisionMax;
+    public NetworkVariable<bool> collide = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    [SerializeField] private float TimerCollisionMax;
     private float TimerCollision;
 
     public bool canMove = true;
 
 	public int KillCount { get; set; }
-	public int Health { get; set; }
+    
+    [SerializeField] private int initialHealth = 3;
+    private NetworkVariable<int> _health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
 	public Action HitTaken { get; set; } 
 	public Action HitGiven { get; set; } 
@@ -65,6 +63,8 @@ public class player : NetworkBehaviour
 
         _rb = GetComponent<Rigidbody2D>();
         _cc = GetComponent<CapsuleCollider2D>();
+
+        _health.Value = initialHealth;
         
         //Shoot
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
@@ -90,30 +90,17 @@ public class player : NetworkBehaviour
         //Animation
         TimerClignote = TimerClignoteMax;
         playerColor = false;
-        Collide = false;
+        collide.Value = false;
 
         TimerCollision = TimerCollisionMax;
 
-        if (!IsOwner)
-            return;
-
         camera = Camera.main;
-        Health = 3;
     }
 
     private void Update()
     {
         if (!IsOwner)
            return;
-
-        // var moveDir = new Vector3(0, 0, 0);
-        //
-        // if (Input.GetKey(KeyCode.Z)) moveDir.y += 1f;
-        // if (Input.GetKey(KeyCode.S)) moveDir.y -= 1f;
-        // if (Input.GetKey(KeyCode.Q)) moveDir.x -= 1f;
-        // if (Input.GetKey(KeyCode.D)) moveDir.x += 1f;
-        //
-        // transform.position += moveDir * 2 * Time.deltaTime;
         
         if (canMove)
         {
@@ -154,7 +141,7 @@ public class player : NetworkBehaviour
         }
 
         //Clignote en rouge
-        if (Collide)
+        if (collide.Value)
         {
             TimerCollision -= Time.deltaTime;
             TimerClignote -= Time.deltaTime;
@@ -178,7 +165,7 @@ public class player : NetworkBehaviour
                 TimerCollision = TimerCollisionMax;
                 _sr.material.color = Color.white;
                 TimerClignote = TimerClignoteMax;
-                Collide = false;
+                collide.Value = false;
             }
         }  
     }
@@ -194,7 +181,7 @@ public class player : NetworkBehaviour
     }
 
 	[ContextMenu("Shoot")]
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
 	public void ShootServerRpc(Vector2 shootDirection, float angle)
     {
         Debug.Log(shootDirection);
@@ -206,7 +193,7 @@ public class player : NetworkBehaviour
         newBoul.launcher = this;
         animator.ShootToward(shootDirection.x, shootDirection.y);
     
-		SnowballThrown?.Invoke();
+        SnowballThrown?.Invoke();
     }
 
     public void Reload()
@@ -233,24 +220,33 @@ public class player : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(Health == 0)
+        if (!IsOwner) return;
+        
+        if(_health.Value == 0)
         {
             animator.Kill();
 			Died?.Invoke(this);
             Destroy(gameObject , 1);
         }
-        if(Health > 0 && Collide == false)
+        if(_health.Value > 0 && collide.Value == false)
         {
-            Collide = true;
+            collide.Value = true;
         }
     }
 
 	[ContextMenu("TakeDamage")]
-	public void TakeDamage()
+	public void TakeDamage(ulong clientId)
 	{
-        Health--;
+        TakeDamageClientRpc(clientId);
+    }
+
+    [ClientRpc]
+    private void TakeDamageClientRpc(ulong clientId)
+    {
+        if (clientId != NetworkManager.Singleton.LocalClientId) return;
+        _health.Value--;
         HitTaken?.Invoke();
-	}
+    }
 
 	[ContextMenu("InflictDamage")]
 	public void InflictDamage()
