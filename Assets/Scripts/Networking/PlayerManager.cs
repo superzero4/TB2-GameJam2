@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerManager : NetworkBehaviour
 {
-    [SerializeField] private GameObject prefab;
+    [SerializeField] private player prefab;
     [SerializeField] private List<Transform> _spawnPoints;
 
     private static List<player> _players = new List<player>();
@@ -13,9 +13,13 @@ public class PlayerManager : NetworkBehaviour
 
     private AudioManager audioManager;
 
+    public player TopPlayer => _players.Aggregate((p1, p2) => p1.KillCount > p2.KillCount ? p1 : p2);
+
     public override void OnNetworkSpawn()
     {
-        SpawnPlayerServerRpc(NetworkManager.Singleton.LocalClientId);
+        ulong localClientId = NetworkManager.Singleton.LocalClientId;
+        Debug.Log("Sending : " + LobbyPlayerStatesContainer._playersData[(int)localClientId].SkinIndex);
+        SpawnPlayerServerRpc(localClientId, LobbyPlayerStatesContainer._playersData[(int)localClientId].SkinIndex);
 
         audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         audioManager.Stop("Musique");
@@ -23,16 +27,17 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SpawnPlayerServerRpc(ulong clientID)
+    private void SpawnPlayerServerRpc(ulong clientID,int skinIndex)
     {
-        var playerGO = Instantiate(prefab, _spawnPoints[_players.Count].position, Quaternion.identity);
-        player player = playerGO.GetComponent<player>();
-        player.manager = this;
+
+        int count = (int)clientID;
+        player player = Instantiate(prefab, _spawnPoints[count].position, Quaternion.identity);
         _players.Add(player);
-
-        playerGO.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
-
+        player.manager = this;
+        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
         player.Died += OnPlayerDied;
+        player.HitGiven += OnHitGiven;
+        player.SkinSelectionClientRpc(clientID, LobbyPlayerStatesContainer._playersData);
     }
     
     
@@ -47,8 +52,24 @@ public class PlayerManager : NetworkBehaviour
 			Invoke(nameof(EndRound), 2f);
 	}
 
-	void EndRound()
-	{
-		ServerGameNetPortal.Instance.EndRound();
-	}
+        if (_players.Count == 1)
+            Invoke(nameof(EndRound), 2f);
+    }
+
+    void EndRound()
+    {
+        ServerGameNetPortal.Instance.EndRound();
+    }
+    void OnHitGiven()
+    {
+        int max = _players.Max(player => player.KillCount);
+        foreach (var p in _players)
+        {
+            if (p.KillCount == max)
+                p.GetComponentInChildren<PlayerUI>().SetCrowns();
+            else
+                p.GetComponentInChildren<PlayerUI>().UnsetCrowns();
+
+        }
+    }
 }

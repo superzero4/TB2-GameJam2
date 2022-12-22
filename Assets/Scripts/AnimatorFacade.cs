@@ -6,8 +6,7 @@ public class AnimatorFacade : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
     [SerializeField] private RuntimeAnimatorController[] _controllers;
-    [SerializeField] private AnimationCurve _frameOnProgress;
-    float? lengthOfDeathClip;
+    float lengthOfDeathClip;
     private const string X = "XDir";
     private const string Y = "YDir";
     private const string Death = "Death";
@@ -18,11 +17,13 @@ public class AnimatorFacade : MonoBehaviour
     private const string ReloadBool = "Reload";
     private const float FirstFrameOfLoop = 2f;
     private float EaseInOut = .2f;
+    public RuntimeAnimatorController this[int i] => _controllers[i];
+
 
     private void Start()
     {
 
-        lengthOfDeathClip = 5;// ??= _animator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
+        lengthOfDeathClip = 5;
     }
     public void SetOrientation(float x, float y, string xKey = X, string yKey = Y)
 
@@ -58,15 +59,6 @@ public class AnimatorFacade : MonoBehaviour
             value = FirstFrameOfLoop + progress * 5 % 2;
             //Debug.Log("Middle : " + value);
         }
-
-
-        //We cycle beetwen frame 3 and 4 while progressing
-        //Debug.Log("Progress ; " + progress);
-        if (progress > EaseInOut && progress < 1 - EaseInOut)
-        {
-            value = FirstFrameOfLoop + progress * 5 % 2;
-            //Debug.Log("Middle : " + value);
-        }
         else
         {
             if (progress > 1 - EaseInOut)
@@ -77,7 +69,7 @@ public class AnimatorFacade : MonoBehaviour
             value = progress * (FirstFrameOfLoop / EaseInOut);
             //Debug.Log("Middle : " + value);
         }
-        value = (float)Mathf.FloorToInt(value) / lengthOfDeathClip.Value;
+        value = (float)Mathf.FloorToInt(value) / lengthOfDeathClip;
         //Debug.Log("Final value , " + value);
         _animator.SetFloat(ReloadProgress, value);
     }

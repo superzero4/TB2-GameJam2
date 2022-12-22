@@ -55,14 +55,18 @@ public class player : NetworkBehaviour
 
     [SerializeField] private float timeToDied = 1f;
     
-	public Action HitTaken { get; set; } 
+    [ClientRpc]
+    internal void SkinSelectionClientRpc(ulong clientID, LobbyPlayerState[] playersData)
+    {
+        if (OwnerClientId != clientID) return;
+        animator.PickAnimator(playersData[clientID].SkinIndex);
+    }
+
+    public Action HitTaken { get; set; } 
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }
 	public Action<player> Died { get; set; }
-	
-	public static Action MaxKillCountChanged { get; set; }
-
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)
@@ -102,6 +106,8 @@ public class player : NetworkBehaviour
         TimerCollision = TimerCollisionMax;
 
         camera = Camera.main;
+        animator.PickAnimator(LobbyPlayerStatesContainer._playersData[(int)OwnerClientId].SkinIndex);
+
     }
 
     private void Update()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -29,7 +30,11 @@ public class PlayerUI : MonoBehaviour
 		_player.SnowballThrown += OnSnowballThrown;
 		_player.RefillSnowball += OnRefillSnowball;
 		
-		player.MaxKillCountChanged += OnMaxKillCountChanged;
+	}
+
+    private void OnHitGiven()
+    {
+		_scoreText.text = $"{_player.KillCount}";
 	}
 
 	void Start()
@@ -45,8 +50,6 @@ public class PlayerUI : MonoBehaviour
 		_player.HitGiven -= OnHitGiven;
 		_player.SnowballThrown -= OnSnowballThrown;
 		_player.RefillSnowball -= OnRefillSnowball;
-
-		player.MaxKillCountChanged -= OnMaxKillCountChanged;
 	}
 
 	void OnHitTaken()
@@ -54,16 +57,6 @@ public class PlayerUI : MonoBehaviour
 		if (_activeHearts.TryPop(out Image heart))
 			heart.color = Color.gray;
 	}
-
-	void OnHitGiven()
-	{
-		//TODO use network manager
-		/*if (player.Players.Max(player => player.KillCount) == _player.KillCount)
-			SetCrowns();
-		
-		_scoreText.text = $"{_player.KillCount}";*/
-	}
-
 	void OnSnowballThrown()
 	{
 		_snowballFillImage.fillAmount = 0f;
@@ -79,13 +72,13 @@ public class PlayerUI : MonoBehaviour
 		UnsetCrowns();
 	}
 
-	void SetCrowns()
+	public void SetCrowns()
 	{
 		_rightCrownImage.enabled = true;
 		_leftCrownImage.enabled = true;
 	}
 
-	void UnsetCrowns()
+	public void UnsetCrowns()
 	{
 		_rightCrownImage.enabled = false;
 		_leftCrownImage.enabled = false;
