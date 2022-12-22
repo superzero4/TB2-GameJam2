@@ -27,7 +27,7 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SpawnPlayerServerRpc(ulong clientID,int skinIndex)
+    private void SpawnPlayerServerRpc(ulong clientID, int skinIndex)
     {
 
         int count = (int)clientID;
@@ -39,22 +39,19 @@ public class PlayerManager : NetworkBehaviour
         player.HitGiven += OnHitGiven;
         player.SkinSelectionClientRpc(clientID, LobbyPlayerStatesContainer._playersData);
     }
-    
-    
 
-	void OnPlayerDied(player player)
-	{
-		_players.Remove(player);
-		player.GetComponent<NetworkObject>().Despawn(false);
-		Destroy(player.gameObject);
-		
-		if (_players.Count == 1)
-			Invoke(nameof(EndRound), 2f);
-	}
+
+
+    void OnPlayerDied(player player)
+    {
+        _players.Remove(player);
+        player.GetComponent<NetworkObject>().Despawn(false);
+        Destroy(player.gameObject);
 
         if (_players.Count == 1)
             Invoke(nameof(EndRound), 2f);
     }
+
 
     void EndRound()
     {
