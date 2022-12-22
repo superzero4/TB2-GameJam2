@@ -29,10 +29,24 @@ public class player : NetworkBehaviour
     private Vector2 aimDirection;
     private Vector2 mousePosition;
     private new Camera camera;
-    
+
     //Reload
     private bool canShoot;
-    private bool reload;
+    /// <summary>
+    /// Internal variable, not synced with animator
+    /// </summary>
+    private bool unsyncReload=false;
+    /// <summary>
+    /// Syncs with animator on set
+    /// </summary>
+    private bool reload
+    {
+        get => unsyncReload; set
+        {
+            unsyncReload = value;
+            animator.ReloadAnimation(value);
+        }
+    }
     public bool canReload;
     public float timerReloadMax;
     private float timerReload;
@@ -49,7 +63,7 @@ public class player : NetworkBehaviour
     //PauseMenu
     [SerializeField]
     private GameObject buttonPanel;
-    
+
     //Others
     [ClientRpc]
     internal void SkinSelectionClientRpc(ulong clientID, LobbyPlayerState[] playersData)
@@ -60,6 +74,12 @@ public class player : NetworkBehaviour
     public bool canMove = true;
 
     //Actions
+	public Action HitTaken { get; set; }
+	public Action HitGiven { get; set; }
+	public Action RefillSnowball { get; set; }
+	public Action SnowballThrown { get; set; }
+	public static Action MaxKillCountChanged { get; set; }
+
 	public Action<player> Died { get; set; }
 
 	public NetworkVariable<bool> hasCrowns = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -80,7 +100,7 @@ public class player : NetworkBehaviour
         _cc = GetComponent<CapsuleCollider2D>();
 
         health.Value = initialHealth;
-        
+
         //Shoot
         controls.FindActionMap("Player").FindAction("Shoot").performed += ctx =>
         {
@@ -89,7 +109,7 @@ public class player : NetworkBehaviour
                 Vector2 dir = new Vector2(GetMousePosition().x, GetMousePosition().y);
                 ShootServerRpc(dir, angle, OwnerClientId);
                 canShoot = false;
-            }  
+            }
         };
         controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
         {
@@ -123,20 +143,20 @@ public class player : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner)
-           return;
-        
+            return;
+
         if (canMove)
         {
-	        //Shoot
-	        mousePosition = GetMousePosition();
+            //Shoot
+            mousePosition = GetMousePosition();
 
-	        //Move
-	        Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
-	        newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
-	        newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
+            //Move
+            Vector2 inputVector = controls.FindActionMap("Player").FindAction("Movement").ReadValue<Vector2>();
+            newPos.x = inputVector.x * speed * Time.fixedDeltaTime;
+            newPos.y = inputVector.y * speed * Time.fixedDeltaTime;
 
-	        //Animation
-	        animator.SetOrientation(inputVector.x, inputVector.y);
+            //Animation
+            animator.SetOrientation(inputVector.x, inputVector.y);
 
             //Reload
             if (inputVector != Vector2.zero)
@@ -156,11 +176,12 @@ public class player : NetworkBehaviour
             {
                 animator.ReloadAnimation(1 - (timerReload / timerReloadMax));
                 timerReload -= Time.deltaTime;
-                if(timerReload <= 0)
-                {   
+                if (timerReload <= 0)
+                {
                     canShoot = true;
                     timerReload = timerReloadMax;
                     reload = false;
+                    animator.ReloadAnimation(false);
                 }
             }
         }
@@ -192,7 +213,7 @@ public class player : NetworkBehaviour
                 TimerClignote = TimerClignoteMax;
                 collide.Value = false;
             }
-        }  
+        }
     }
 
     public void FixedUpdate()
@@ -205,7 +226,7 @@ public class player : NetworkBehaviour
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
 
-	public void Pause()
+    public void Pause()
     {
         if (buttonPanel.activeSelf)
         {
@@ -227,12 +248,12 @@ public class player : NetworkBehaviour
 	
     [ContextMenu("Shoot")]
     [ServerRpc(RequireOwnership = false)]
-	public void ShootServerRpc(Vector2 shootDirection, float angle, ulong playerId)
+    public void ShootServerRpc(Vector2 shootDirection, float angle, ulong playerId)
     {
-        Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
+        Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle),
+            _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
         boule newBoul = Instantiate(b, newBoulePos, Quaternion.identity);
-        newBoul.angle = angle;
-        newBoul.launcherId2.Value = playerId;
+        newBoul.Init(angle, playerId);
         Debug.Log("Lauchernew" + newBoul.launcherId);
         newBoul.GetComponent<NetworkObject>().Spawn();
         animator.ShootToward(shootDirection.x, shootDirection.y);
@@ -257,7 +278,7 @@ public class player : NetworkBehaviour
         else if (Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo, 4000, 0b1 << 6))
         {
             return hitInfo.point;
-        }   
+        }
         else
         {
             return Vector2.zero;
@@ -288,7 +309,7 @@ public class player : NetworkBehaviour
                 break;
         }
     }
-    
+
     private void PlayerDied()
     {
         animator.Kill();
