@@ -75,7 +75,7 @@ public class player : NetworkBehaviour
             if (canShoot)
             {
                 Vector2 dir = new Vector2(GetMousePosition().x, GetMousePosition().y);
-                ShootServerRpc(dir, angle);
+                ShootServerRpc(dir, angle, OwnerClientId);
                 canShoot = false;
             }  
         };
@@ -185,17 +185,14 @@ public class player : NetworkBehaviour
 
 	[ContextMenu("Shoot")]
     [ServerRpc(RequireOwnership = false)]
-	public void ShootServerRpc(Vector2 shootDirection, float angle)
+	public void ShootServerRpc(Vector2 shootDirection, float angle, ulong playerId)
     {
-        Debug.Log(shootDirection);
-
         Vector3 newBoulePos = new Vector3(_rb.position.x + 0.6f * _cc.size.x * Mathf.Cos(angle), _rb.position.y + 0.6f * _cc.size.y * Mathf.Sin(angle));
         boule newBoul = Instantiate(b , newBoulePos , Quaternion.identity);
         newBoul.GetComponent<NetworkObject>().Spawn();
         newBoul.angle = angle;
         newBoul.launcher = this;
         animator.ShootToward(shootDirection.x, shootDirection.y);
-    
         SnowballThrown?.Invoke();
     }
 
@@ -231,9 +228,13 @@ public class player : NetworkBehaviour
 			Died?.Invoke(this);
             Destroy(gameObject , 1);
         }
-        if(_health.Value > 0 && collide.Value == false)
+        if (collision.TryGetComponent(out boule boule))
         {
-            collide.Value = true;
+            if (boule.launcher != this)
+            {
+                Debug.Log("boum");
+                collide.Value = true;
+            }
         }
     }
 
