@@ -235,7 +235,6 @@ public class player : NetworkBehaviour
     {
         if (clientId != NetworkManager.Singleton.LocalClientId) return;
         health.Value--;
-        health.OnValueChanged.Invoke(health.Value + 1, health.Value);
         
         //HitTaken?.Invoke();
 
