@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cinemachine;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
@@ -102,6 +103,9 @@ public class player : NetworkBehaviour
     {
         if (!IsOwner)
             return;
+
+        var cam = FindObjectOfType<CinemachineVirtualCamera>();
+        cam.LookAt =  cam.Follow = transform;
 
         _rb = GetComponent<Rigidbody2D>();
         _cc = GetComponent<CapsuleCollider2D>();
