@@ -163,7 +163,7 @@ public class player : NetworkBehaviour
 			{
 				if (snowballStatus.Value == SnowballStatus.Reloading && IsOwner)
 					snowballStatus.Value = SnowballStatus.NotReady;
-                canReload = false;
+				canReload = false;
                 reload = false;
                 timerReload = timerReloadMax;
                 animator.ReloadAnimation(false);
@@ -179,6 +179,8 @@ public class player : NetworkBehaviour
                 if (timerReload <= 0)
                 {
                     canShoot = true;
+					if (IsOwner)
+						snowballStatus.Value = SnowballStatus.Ready;
                     timerReload = timerReloadMax;
                     reload = false;
                     animator.ReloadAnimation(false);
