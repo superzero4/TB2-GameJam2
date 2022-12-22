@@ -42,31 +42,34 @@ public class player : NetworkBehaviour
     private float TimerClignote;
     private bool playerColor;
     public NetworkVariable<bool> collide = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
     [SerializeField] private float TimerCollisionMax;
     private float TimerCollision;
 
-    public bool canMove = true;
-
-	public int KillCount { get; set; }
+    //PauseMenu
+    [SerializeField]
+    private GameObject buttonPanel;
     
-    [SerializeField] private int initialHealth = 3;
-    public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-
-    [SerializeField] private float timeToDied = 1f;
-    
+    //Others
     [ClientRpc]
     internal void SkinSelectionClientRpc(ulong clientID, LobbyPlayerState[] playersData)
     {
         if (OwnerClientId != clientID) return;
         animator.PickAnimator(playersData[clientID].SkinIndex);
     }
+    public bool canMove = true;
 
+    //Actions
     public Action HitTaken { get; set; } 
 	public Action HitGiven { get; set; } 
 	public Action RefillSnowball { get; set; } 
 	public Action SnowballThrown { get; set; }
 	public Action<player> Died { get; set; }
+    public int KillCount { get; set; }
+    public static Action MaxKillCountChanged { get; set; }
+    [SerializeField] private int initialHealth = 3;
+    public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    [SerializeField] private float timeToDied = 1f;
+
     public override void OnNetworkSpawn()
     {
         if (!IsOwner)
@@ -93,6 +96,13 @@ public class player : NetworkBehaviour
         };
         controls.Enable();
 
+        //Pause
+        buttonPanel.SetActive(false);
+        controls.FindActionMap("Player").FindAction("Pause").performed += ctx =>
+        {
+            Pause();
+        };
+
         //Reload
         canShoot = false;
         reload = false;
@@ -102,12 +112,10 @@ public class player : NetworkBehaviour
         TimerClignote = TimerClignoteMax;
         playerColor = false;
         collide.Value = false;
-
         TimerCollision = TimerCollisionMax;
 
         camera = Camera.main;
         animator.PickAnimator(LobbyPlayerStatesContainer._playersData[(int)OwnerClientId].SkinIndex);
-
     }
 
     private void Update()
@@ -193,7 +201,17 @@ public class player : NetworkBehaviour
         angle = Mathf.Atan2(aimDirection.y, aimDirection.x);
     }
 
-	
+	public void Pause()
+    {
+        if (buttonPanel.activeSelf)
+        {
+            buttonPanel.SetActive(false);
+        }
+        else
+        {
+            buttonPanel.SetActive(true);
+        }
+    }
 
     public void Reload()
     {
