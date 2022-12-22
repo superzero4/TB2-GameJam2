@@ -31,21 +31,25 @@ public class player : NetworkBehaviour
 
     //Reload
     private bool canShoot;
+
     /// <summary>
     /// Internal variable, not synced with animator
     /// </summary>
-    private bool unsyncReload=false;
+    private bool unsyncReload = false;
+
     /// <summary>
     /// Syncs with animator on set
     /// </summary>
     private bool reload
     {
-        get => unsyncReload; set
+        get => unsyncReload;
+        set
         {
             unsyncReload = value;
             animator.ReloadAnimation(value);
         }
     }
+
     public bool canReload;
     public float timerReloadMax;
     private float timerReload;
@@ -55,13 +59,15 @@ public class player : NetworkBehaviour
     [SerializeField] private float TimerClignoteMax;
     private float TimerClignote;
     private bool playerColor;
-    public NetworkVariable<bool> collide = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    public NetworkVariable<bool> collide = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
+
     [SerializeField] private float TimerCollisionMax;
     private float TimerCollision;
 
     //PauseMenu
-    [SerializeField]
-    private GameObject buttonPanel;
+    [SerializeField] private GameObject buttonPanel;
 
     //Others
     [ClientRpc]
@@ -70,6 +76,7 @@ public class player : NetworkBehaviour
         if (OwnerClientId != clientID) return;
         animator.PickAnimator(playersData[clientID].SkinIndex);
     }
+
     public bool canMove = true;
 
     //Actions
@@ -81,7 +88,10 @@ public class player : NetworkBehaviour
     public int KillCount { get; set; }
     public static Action MaxKillCountChanged { get; set; }
     [SerializeField] private int initialHealth = 3;
-    public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    public NetworkVariable<int> health = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
+
     [SerializeField] private float timeToDied = 1f;
 
     public override void OnNetworkSpawn()
@@ -104,10 +114,7 @@ public class player : NetworkBehaviour
                 canShoot = false;
             }
         };
-        controls.FindActionMap("Player").FindAction("Reload").performed += ctx =>
-        {
-            Reload();
-        };
+        controls.FindActionMap("Player").FindAction("Reload").performed += ctx => { Reload(); };
         controls.Enable();
 
         //Pause
@@ -163,6 +170,7 @@ public class player : NetworkBehaviour
             {
                 canReload = true;
             }
+
             if (reload && canReload)
             {
                 animator.ReloadAnimation(1 - (timerReload / timerReloadMax));
@@ -181,32 +189,70 @@ public class player : NetworkBehaviour
         if (collide.Value)
         {
             TimerCollision -= Time.deltaTime;
+
+            FlickeringServerRpc();
+
+            //Periode d'invincibilit� ap�rs une collision
+            if (TimerCollision <= 0)
+            {
+                collide.Value = false;
+
+                TimerCollision = TimerCollisionMax;
+                TimerClignote = TimerClignoteMax;
+
+                ResetColorMaterialServerRpc();
+            }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void FlickeringServerRpc()
+    {
+        if (IsHost)
+        {
             TimerClignote -= Time.deltaTime;
             if (TimerClignote <= 0)
             {
                 playerColor = !playerColor;
                 TimerClignote = TimerClignoteMax;
             }
-            if (!playerColor)
-            {
-                _sr.material.color = Color.red;
-            }
-            if (playerColor)
-            {
-                _sr.material.color = Color.white;
-            }
 
-            //Periode d'invincibilit� ap�rs une collision
-            if (TimerCollision <= 0)
-            {
-                TimerCollision = TimerCollisionMax;
-                _sr.material.color = Color.white;
-                TimerClignote = TimerClignoteMax;
-                collide.Value = false;
-            }
+            _sr.material.color = playerColor ? Color.white : Color.red;
         }
+
+        FlickeringClientRpc();
     }
 
+    [ClientRpc]
+    private void FlickeringClientRpc()
+    {
+        TimerClignote -= Time.deltaTime;
+        if (TimerClignote <= 0)
+        {
+            playerColor = !playerColor;
+            TimerClignote = TimerClignoteMax;
+        }
+
+        _sr.material.color = playerColor ? Color.white : Color.red;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ResetColorMaterialServerRpc()
+    {
+        if (IsHost)
+        {
+            _sr.material.color = Color.white;
+        }
+
+        ResetColorMaterialClientRpc();
+    }
+
+    [ClientRpc]
+    private void ResetColorMaterialClientRpc()
+    {
+        _sr.material.color = Color.white;
+    }
+    
     public void FixedUpdate()
     {
         //Move
@@ -234,6 +280,7 @@ public class player : NetworkBehaviour
         RefillSnowball?.Invoke();
         reload = true;
     }
+
     [ContextMenu("Shoot")]
     [ServerRpc(RequireOwnership = false)]
     public void ShootServerRpc(Vector2 shootDirection, float angle, ulong playerId)
@@ -270,10 +317,13 @@ public class player : NetworkBehaviour
         TakeDamageClientRpc(clientId);
     }
 
+    private ulong clientIdTouched;
+
     [ClientRpc]
     private void TakeDamageClientRpc(ulong clientId)
     {
         if (clientId != NetworkManager.Singleton.LocalClientId) return;
+        clientIdTouched = clientId;
         health.Value--;
 
         //HitTaken?.Invoke();
