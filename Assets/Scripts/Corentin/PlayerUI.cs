@@ -70,13 +70,17 @@ public class PlayerUI : MonoBehaviour
 		switch (newValue)
 		{
 			case SnowballStatus.NotReady:
+				_snowballFillImage.fillAmount = 0f;
+				
 				if (_refillCoroutine is null)
 					return;
 		
 				StopCoroutine(_refillCoroutine);
-				_snowballFillImage.fillAmount = 0f;
 				break;
 			case SnowballStatus.Reloading:
+				if (previousValue == SnowballStatus.Ready)
+					break;
+				
 				_refillCoroutine = StartCoroutine(RefillSnowball());
 				break;
 			case SnowballStatus.Ready:
