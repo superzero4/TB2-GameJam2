@@ -37,11 +37,9 @@ public class PlayerManager : NetworkBehaviour
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID, true);
         player.Died += OnPlayerDied;
         player.killCount.OnValueChanged += OnKillCountValueChanged;
-        player.SkinSelectionClientRpc(clientID, LobbyPlayerStatesContainer._playersData);
+        player.SkinSelectionClientRpc(clientID, LobbyPlayerStatesContainer._playersData[clientID].SkinIndex);
     }
-
-
-
+    
     void OnPlayerDied(player player)
     {
         _players.Remove(player);
@@ -51,7 +49,6 @@ public class PlayerManager : NetworkBehaviour
         if (_players.Count == 1)
             Invoke(nameof(EndRound), 2f);
     }
-
 
     void EndRound()
     {

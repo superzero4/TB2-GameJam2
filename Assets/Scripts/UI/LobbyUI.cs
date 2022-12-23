@@ -7,24 +7,22 @@ using System.Collections.Generic;
 
 public class LobbyUI : NetworkBehaviour
 {
-    [Header("References")]
-    [SerializeField]
+    [Header("References")] [SerializeField]
     private LobbyPlayerCard[] lobbyPlayerCards;
+
     [SerializeField] private Sprite[] charThumbnails;
     [SerializeField] private Button startGameButton;
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private int minPlayer;
     LobbyPlayerStatesContainer _container;
-    private NetworkList<LobbyPlayerState> lobbyPlayers;
 
-    private void Awake()
-    {
-        lobbyPlayers = new NetworkList<LobbyPlayerState>();
-        inputField.onSelect.AddListener(CopyToClipboard);
-    }
+    private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>(new List<LobbyPlayerState>(), NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
 
     public override void OnNetworkSpawn()
     {
+        inputField.onSelect.AddListener(CopyToClipboard);
+
         if (IsClient)
         {
             lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
@@ -45,21 +43,25 @@ public class LobbyUI : NetworkBehaviour
 
         inputField.text = PlayerPrefs.GetString("Code");
     }
+
     public void OnKonamiCode()
     {
         Debug.Log("Sending RPC with " + NetworkManager.Singleton.LocalClientId);
         SpecialSkinServerRPC(NetworkManager.Singleton.LocalClientId);
     }
+
     [ServerRpc(RequireOwnership = false)]
     public void SpecialSkinServerRPC(ulong clientID)
     {
         Debug.Log("Reiceved RPC with " + clientID);
-        var p = lobbyPlayers[(int)clientID];
-        p.IsSpecialSkin = true;
-        lobbyPlayers[(int)clientID] = p;
+        var lobbyPlayerState = lobbyPlayers[(int)clientID];
+        lobbyPlayerState.IsSpecialSkin = true;
+        lobbyPlayerState.Skin = 4;
+        lobbyPlayers[(int)clientID] = lobbyPlayerState;
         //Will call on list changed and update image
         //lobbyPlayerCards[p.ClientId].UpdateImage(charThumbnails[4]);
     }
+
     public override void OnDestroy()
     {
         LobbyPlayerStatesContainer._playersData = new LobbyPlayerState[lobbyPlayers.Count];
@@ -69,6 +71,7 @@ public class LobbyUI : NetworkBehaviour
             LobbyPlayerStatesContainer._playersData[i] = p;
             i++;
         }
+
         base.OnDestroy();
 
         lobbyPlayers.OnListChanged -= HandleLobbyPlayersStateChanged;
@@ -107,10 +110,10 @@ public class LobbyUI : NetworkBehaviour
             return;
         }
 
-		lobbyPlayers.Add(new LobbyPlayerState(
-			clientId,
-			playerData.Value.PlayerName,
-			0,
+        lobbyPlayers.Add(new LobbyPlayerState(
+            clientId,
+            playerData.Value.PlayerName,
+            0,
             false
         ));
     }
@@ -179,8 +182,24 @@ public class LobbyUI : NetworkBehaviour
         {
             if (lobbyPlayers.Count > i)
             {
-                LobbyPlayerState lobbyPlayerState = lobbyPlayers[i];
+                var lobbyPlayerState = lobbyPlayers[i];
                 lobbyPlayerCards[i].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
+
+                if (lobbyPlayerState.ClientId == NetworkManager.Singleton.LocalClientId)
+                {
+                    lobbyPlayerCards[i].RightBtn.onClick.RemoveAllListeners();
+                    lobbyPlayerCards[i].RightBtn.onClick
+                        .AddListener(() => OnNextSkin((int)lobbyPlayerState.ClientId));
+
+                    lobbyPlayerCards[i].LeftBtn.onClick.RemoveAllListeners();
+                    lobbyPlayerCards[i].LeftBtn.onClick
+                        .AddListener(() => OnPreviousSkin((int)lobbyPlayerState.ClientId));
+                }
+                else
+                {
+                    lobbyPlayerCards[i].RightBtn.gameObject.SetActive(false);
+                    lobbyPlayerCards[i].LeftBtn.gameObject.SetActive(false);
+                }
             }
             else
             {
@@ -194,9 +213,54 @@ public class LobbyUI : NetworkBehaviour
         }
     }
 
+    private void OnNextSkin(int clientId)
+    {
+        LobbyPlayerState lobbyPlayerState = lobbyPlayers[clientId];
+
+        if (lobbyPlayerState.IsSpecialSkin)
+        {
+            if (lobbyPlayerState.Skin + 1 > charThumbnails.Length - 1)
+                lobbyPlayerState.Skin = 0;
+            else
+            {
+                lobbyPlayerState.Skin++;
+            }
+        }
+        else if (lobbyPlayerState.Skin + 1 > charThumbnails.Length - 2)
+        {
+            lobbyPlayerState.Skin = 0;
+        }
+        else
+        {
+            lobbyPlayerState.Skin++;
+        }
+
+        UpdateSkinServerRpc(clientId, lobbyPlayerState);
+        lobbyPlayerCards[clientId].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
+    }
+
+    private void OnPreviousSkin(int clientId)
+    {
+        LobbyPlayerState lobbyPlayerState = lobbyPlayers[clientId];
+        
+        if (lobbyPlayerState.Skin - 1 < 0)
+            lobbyPlayerState.Skin =
+                lobbyPlayerState.IsSpecialSkin ? charThumbnails.Length - 1 : charThumbnails.Length - 2;
+        else
+            lobbyPlayerState.Skin--;
+        
+        UpdateSkinServerRpc(clientId, lobbyPlayerState);
+        lobbyPlayerCards[clientId].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateSkinServerRpc(int clientId, LobbyPlayerState lobbyPlayerState)
+    {
+        lobbyPlayers[clientId] = lobbyPlayerState;
+    }
+
     private static void CopyToClipboard(string str)
     {
         GUIUtility.systemCopyBuffer = str;
-        Debug.Log("Copy to clipboard : " + GUIUtility.systemCopyBuffer);
     }
 }

@@ -1105,7 +1105,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 125, y: 50}
+  m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2551377078636662446
 CanvasRenderer:
@@ -1162,8 +1162,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1258,7 +1258,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2646964449090216750}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -1540,7 +1540,6 @@ MonoBehaviour:
   - {fileID: 42036215, guid: e89258e07636ac647bc27336909424b1, type: 3}
   startGameButton: {fileID: 1619667364}
   inputField: {fileID: 6388506161488906909}
-  text: {fileID: 0}
   minPlayer: 1
 --- !u!114 &293607810
 MonoBehaviour:
@@ -1554,7 +1553,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c439a0660d9b7b42b5d0b719dec26f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerKonamiMax: 0
+  timerKonamiMax: 2
   KonamiCodeEvent:
     m_PersistentCalls:
       m_Calls:
@@ -1636,7 +1635,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u200B"
+  m_text: "wwwww\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cd49ac971278bf54d85e310aec88687b, type: 2}
   m_sharedMaterial: {fileID: -68723577383065074, guid: cd49ac971278bf54d85e310aec88687b, type: 2}
@@ -1663,8 +1662,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1796,7 +1795,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 250, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8869454775454685648
 CanvasRenderer:
@@ -1922,7 +1921,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: 
+  m_Text: wwwww
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 1
