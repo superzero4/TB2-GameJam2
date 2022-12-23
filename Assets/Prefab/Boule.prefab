@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   angle: 0
-  shootSpeed: 7
+  shootSpeed: 10
   _rb: {fileID: 7821137091161343562}
   launcherId2:
     m_InternalValue: 25
