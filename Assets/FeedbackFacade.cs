@@ -13,7 +13,7 @@ public class FeedbackFacade : MonoBehaviour
     private void Awake()
     {
         //_player.HitTaken += PlayFeedback;
-        _player.HitTaken += PlayFeedbackClientRpc;
+        _player.HitTaken += PlayFeedback;
         if (_enbaleHitGiven)
             _player.HitGiven += ()=>_givenFeedback.PlayFeedbacks();
     }
@@ -26,7 +26,7 @@ public class FeedbackFacade : MonoBehaviour
 
     private void PlayFeedback(ulong x)
     {
-        _hitFeedback.PlayFeedbacks();
+        PlayFeedbackClientRpc(x);
     }
     [ClientRpc]
     private void PlayFeedbackClientRpc(ulong targetClient)
