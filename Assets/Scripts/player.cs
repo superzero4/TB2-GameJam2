@@ -337,6 +337,7 @@ public class player : NetworkBehaviour
 	public void TakeDamage(ulong clientId)
 	{
         TakeDamageClientRpc(clientId);
+        HitTaken?.Invoke(clientId);
     }
 
     private ulong clientIdTouched;
