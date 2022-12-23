@@ -9,8 +9,8 @@ public struct LobbyPlayerState : INetworkSerializable, IEquatable<LobbyPlayerSta
     public int KillCount;
     public bool IsReady;
     public bool IsSpecialSkin;
-
-    public int SkinIndex => IsSpecialSkin ? 4 : (int)ClientId;
+    public int Skin;
+    public int SkinIndex => IsSpecialSkin ? 4 : (int)Skin;
 
     public LobbyPlayerState(ulong clientId, FixedString32Bytes playerName, int killCount, bool isReady)
     {
@@ -19,6 +19,7 @@ public struct LobbyPlayerState : INetworkSerializable, IEquatable<LobbyPlayerSta
         KillCount = killCount;
         IsReady = isReady;
         IsSpecialSkin = false;
+        Skin = 0;
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
