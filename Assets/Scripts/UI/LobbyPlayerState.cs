@@ -10,7 +10,7 @@ public struct LobbyPlayerState : INetworkSerializable, IEquatable<LobbyPlayerSta
     public bool IsReady;
     public bool IsSpecialSkin;
     public int Skin;
-    public int SkinIndex => IsSpecialSkin ? 4 : (int)Skin;
+    public int SkinIndex => Skin;
 
     public LobbyPlayerState(ulong clientId, FixedString32Bytes playerName, int killCount, bool isReady)
     {

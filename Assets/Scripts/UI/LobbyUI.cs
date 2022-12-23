@@ -16,14 +16,12 @@ public class LobbyUI : NetworkBehaviour
     [SerializeField] private int minPlayer;
     LobbyPlayerStatesContainer _container;
 
-    private NetworkList<LobbyPlayerState> lobbyPlayers;
+    private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>(new List<LobbyPlayerState>(), NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
 
     public override void OnNetworkSpawn()
     {
         inputField.onSelect.AddListener(CopyToClipboard);
-
-        lobbyPlayers = new NetworkList<LobbyPlayerState>(new List<LobbyPlayerState>(), NetworkVariableReadPermission.Everyone,
-            NetworkVariableWritePermission.Owner);
 
         if (IsClient)
         {
@@ -56,9 +54,10 @@ public class LobbyUI : NetworkBehaviour
     public void SpecialSkinServerRPC(ulong clientID)
     {
         Debug.Log("Reiceved RPC with " + clientID);
-        var p = lobbyPlayers[(int)clientID];
-        p.IsSpecialSkin = true;
-        lobbyPlayers[(int)clientID] = p;
+        var lobbyPlayerState = lobbyPlayers[(int)clientID];
+        lobbyPlayerState.IsSpecialSkin = true;
+        lobbyPlayerState.Skin = 4;
+        lobbyPlayers[(int)clientID] = lobbyPlayerState;
         //Will call on list changed and update image
         //lobbyPlayerCards[p.ClientId].UpdateImage(charThumbnails[4]);
     }
