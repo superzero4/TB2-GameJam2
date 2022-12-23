@@ -73,10 +73,10 @@ public class player : NetworkBehaviour
 
     //Others
     [ClientRpc]
-    internal void SkinSelectionClientRpc(ulong clientID, LobbyPlayerState[] playersData)
+    internal void SkinSelectionClientRpc(ulong clientID, int skinIndex)
     {
         if (OwnerClientId != clientID) return;
-        animator.PickAnimator(playersData[clientID].SkinIndex);
+        animator.PickAnimator(skinIndex);
     }
 
     public bool canMove = true;
