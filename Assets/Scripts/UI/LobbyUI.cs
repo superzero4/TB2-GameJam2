@@ -13,7 +13,6 @@ public class LobbyUI : NetworkBehaviour
     [SerializeField] private Sprite[] charThumbnails;
     [SerializeField] private Button startGameButton;
     [SerializeField] private TMP_InputField inputField;
-    [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private int minPlayer;
     LobbyPlayerStatesContainer _container;
     private NetworkList<LobbyPlayerState> lobbyPlayers;
@@ -45,7 +44,6 @@ public class LobbyUI : NetworkBehaviour
         }
 
         inputField.text = PlayerPrefs.GetString("Code");
-        text.text = NetworkManager.Singleton.LocalClientId.ToString();
     }
     public void OnKonamiCode()
     {
@@ -109,9 +107,10 @@ public class LobbyUI : NetworkBehaviour
             return;
         }
 
-        lobbyPlayers.Add(new LobbyPlayerState(
-            clientId,
-            playerData.Value.PlayerName,
+		lobbyPlayers.Add(new LobbyPlayerState(
+			clientId,
+			playerData.Value.PlayerName,
+			0,
             false
         ));
     }

@@ -6295,7 +6295,7 @@ MonoBehaviour:
   - {fileID: 617117572}
   - {fileID: 1157023393}
   - {fileID: 367973713}
-  _playerPrefab: {fileID: -6135088265534378933, guid: e7645a46e258a004b8d7a3d4f56d5987, type: 3}
+  _playerPrefab: {fileID: 6098547037242079847, guid: b38f2c67e9e268d4ca28c00d46358b92, type: 3}
   _banners:
   - {fileID: 1836872333}
   - {fileID: 932295411}

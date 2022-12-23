@@ -90,7 +90,7 @@ public class ServerGameNetPortal : MonoBehaviour
     {
         gameInProgress = true;
 
-        NetworkManager.Singleton.SceneManager.LoadScene("Map", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene("Map 1", LoadSceneMode.Single);
     }
 
     public void EndRound()
