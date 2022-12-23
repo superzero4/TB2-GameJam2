@@ -77,7 +77,7 @@ public class boule : NetworkBehaviour
         DestroyServerRpc();
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void DestroyServerRpc()
     {
         HideClientRpc();
