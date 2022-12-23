@@ -15,17 +15,16 @@ public class LobbyUI : NetworkBehaviour
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private int minPlayer;
     LobbyPlayerStatesContainer _container;
-    private NetworkList<LobbyPlayerState> lobbyPlayers;
 
-    private void Awake()
-    {
-        lobbyPlayers = new NetworkList<LobbyPlayerState>(default, NetworkVariableReadPermission.Everyone,
-            NetworkVariableWritePermission.Owner);
-        inputField.onSelect.AddListener(CopyToClipboard);
-    }
+    private NetworkList<LobbyPlayerState> lobbyPlayers;
 
     public override void OnNetworkSpawn()
     {
+        inputField.onSelect.AddListener(CopyToClipboard);
+
+        lobbyPlayers = new NetworkList<LobbyPlayerState>(new List<LobbyPlayerState>(), NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+
         if (IsClient)
         {
             lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
@@ -191,7 +190,7 @@ public class LobbyUI : NetworkBehaviour
                 {
                     lobbyPlayerCards[i].RightBtn.onClick.RemoveAllListeners();
                     lobbyPlayerCards[i].RightBtn.onClick
-                        .AddListener(() => OnNextSkinServerRpc((int)lobbyPlayerState.ClientId));
+                        .AddListener(() => OnNextSkin((int)lobbyPlayerState.ClientId));
 
                     lobbyPlayerCards[i].LeftBtn.onClick.RemoveAllListeners();
                     lobbyPlayerCards[i].LeftBtn.onClick
@@ -202,8 +201,6 @@ public class LobbyUI : NetworkBehaviour
                     lobbyPlayerCards[i].RightBtn.gameObject.SetActive(false);
                     lobbyPlayerCards[i].LeftBtn.gameObject.SetActive(false);
                 }
-
-                //AddListenerSkinServerRpc(lobbyPlayers[i], i);
             }
             else
             {
@@ -217,89 +214,7 @@ public class LobbyUI : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void AddListenerSkinServerRpc(LobbyPlayerState lobbyPlayerState, int clientIndex)
-    {
-        lobbyPlayerCards[clientIndex].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
-
-        if (IsHost)
-        {
-            if (lobbyPlayerState.ClientId == NetworkManager.Singleton.LocalClientId)
-            {
-                lobbyPlayerCards[clientIndex].RightBtn.onClick.RemoveAllListeners();
-                lobbyPlayerCards[clientIndex].RightBtn.onClick
-                    .AddListener(() => OnNextSkinServerRpc((int)lobbyPlayerState.ClientId));
-
-                lobbyPlayerCards[clientIndex].LeftBtn.onClick.RemoveAllListeners();
-                lobbyPlayerCards[clientIndex].LeftBtn.onClick
-                    .AddListener(() => OnPreviousSkin((int)lobbyPlayerState.ClientId));
-            }
-            else
-            {
-                lobbyPlayerCards[clientIndex].RightBtn.gameObject.SetActive(false);
-                lobbyPlayerCards[clientIndex].LeftBtn.gameObject.SetActive(false);
-            }
-        }
-
-        AddListenerSkinClientRpc(lobbyPlayerState, clientIndex);
-    }
-
-    [ClientRpc]
-    private void AddListenerSkinClientRpc(LobbyPlayerState lobbyPlayerState, int clientIndex)
-    {
-        if (lobbyPlayerState.ClientId == NetworkManager.Singleton.LocalClientId)
-        {
-            lobbyPlayerCards[clientIndex].RightBtn.onClick.RemoveAllListeners();
-            lobbyPlayerCards[clientIndex].RightBtn.onClick
-                .AddListener(() => OnNextSkinServerRpc((int)lobbyPlayerState.ClientId));
-
-            lobbyPlayerCards[clientIndex].LeftBtn.onClick.RemoveAllListeners();
-            lobbyPlayerCards[clientIndex].LeftBtn.onClick
-                .AddListener(() => OnPreviousSkin((int)lobbyPlayerState.ClientId));
-        }
-        else
-        {
-            lobbyPlayerCards[clientIndex].RightBtn.gameObject.SetActive(false);
-            lobbyPlayerCards[clientIndex].LeftBtn.gameObject.SetActive(false);
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void OnNextSkinServerRpc(int clientId)
-    {
-        if (IsHost)
-        {
-            LobbyPlayerState lobbyPlayerState = lobbyPlayers[clientId];
-
-            if (lobbyPlayerState.IsSpecialSkin)
-            {
-                if (lobbyPlayerState.Skin + 1 > charThumbnails.Length - 1)
-                    lobbyPlayerState.Skin = 0;
-                else
-                {
-                    lobbyPlayerState.Skin++;
-                }
-            }
-            else if (lobbyPlayerState.Skin + 1 > charThumbnails.Length - 2)
-            {
-                lobbyPlayerState.Skin = 0;
-            }
-            else
-            {
-                lobbyPlayerState.Skin++;
-            }
-
-            lobbyPlayers[clientId] = lobbyPlayerState;
-            lobbyPlayerCards[clientId].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
-        }
-        else
-        {
-            OnNextSkinClientRpc(clientId);
-        }
-    }
-
-    [ClientRpc]
-    private void OnNextSkinClientRpc(int clientId)
+    private void OnNextSkin(int clientId)
     {
         LobbyPlayerState lobbyPlayerState = lobbyPlayers[clientId];
 
@@ -321,51 +236,32 @@ public class LobbyUI : NetworkBehaviour
             lobbyPlayerState.Skin++;
         }
 
-        lobbyPlayers[clientId] = lobbyPlayerState;
+        UpdateSkinServerRpc(clientId, lobbyPlayerState);
         lobbyPlayerCards[clientId].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
     }
 
-    public void OnPreviousSkin(int clientId)
-    {
-        if (IsHost)
-        {
-            LobbyPlayerState lobbyPlayerState = lobbyPlayers[clientId];
-
-
-            if (lobbyPlayerState.Skin - 1 < 0)
-                lobbyPlayerState.Skin =
-                    lobbyPlayerState.IsSpecialSkin ? charThumbnails.Length - 1 : charThumbnails.Length - 2;
-            else
-                lobbyPlayerState.Skin--;
-
-            lobbyPlayers[clientId] = lobbyPlayerState;
-            lobbyPlayerCards[clientId].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
-        }
-        else
-        {
-            OnPreviousSkinClientRpc(clientId);
-        }
-    }
-
-    [ClientRpc]
-    private void OnPreviousSkinClientRpc(int clientId)
+    private void OnPreviousSkin(int clientId)
     {
         LobbyPlayerState lobbyPlayerState = lobbyPlayers[clientId];
-
-
+        
         if (lobbyPlayerState.Skin - 1 < 0)
             lobbyPlayerState.Skin =
                 lobbyPlayerState.IsSpecialSkin ? charThumbnails.Length - 1 : charThumbnails.Length - 2;
         else
             lobbyPlayerState.Skin--;
-
-        lobbyPlayers[clientId] = lobbyPlayerState;
+        
+        UpdateSkinServerRpc(clientId, lobbyPlayerState);
         lobbyPlayerCards[clientId].UpdateDisplay(lobbyPlayerState, charThumbnails[lobbyPlayerState.SkinIndex]);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UpdateSkinServerRpc(int clientId, LobbyPlayerState lobbyPlayerState)
+    {
+        lobbyPlayers[clientId] = lobbyPlayerState;
     }
 
     private static void CopyToClipboard(string str)
     {
         GUIUtility.systemCopyBuffer = str;
-        Debug.Log("Copy to clipboard : " + GUIUtility.systemCopyBuffer);
     }
 }

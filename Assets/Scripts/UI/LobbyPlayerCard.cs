@@ -25,7 +25,8 @@ public class LobbyPlayerCard : MonoBehaviour
 
         waitingForPlayerPanel.SetActive(false);
         playerDataPanel.SetActive(true);
-        UpdateImageServerRpc(image);
+        
+        selectedCharacterImage.sprite = image;
     }
 
     public void DisableDisplay()
@@ -33,17 +34,4 @@ public class LobbyPlayerCard : MonoBehaviour
         waitingForPlayerPanel.SetActive(true);
         playerDataPanel.SetActive(false);
     }
-    
-    [ServerRpc(RequireOwnership = false)]
-    public void UpdateImageServerRpc(Sprite sprite)
-    {
-        UpdateImageClientRpc(sprite);
-    }
-
-    [ClientRpc]
-    private void UpdateImageClientRpc(Sprite sprite)
-    {
-        selectedCharacterImage.sprite = sprite;
-    }
-    
 }

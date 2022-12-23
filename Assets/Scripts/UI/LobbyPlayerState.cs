@@ -29,6 +29,7 @@ public struct LobbyPlayerState : INetworkSerializable, IEquatable<LobbyPlayerSta
         serializer.SerializeValue(ref KillCount);
         serializer.SerializeValue(ref IsReady);
         serializer.SerializeValue(ref IsSpecialSkin);
+        serializer.SerializeValue(ref Skin);
     }
 
     public bool Equals(LobbyPlayerState other)
